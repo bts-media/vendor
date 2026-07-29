@@ -1,0 +1,46 @@
+{
+    "compilerOptions": {
+        "target": "ES2020",
+        "useDefineForClassFields": true,
+        "lib": ["ES2020", "DOM", "DOM.Iterable"],
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "skipLibCheck": true,
+        "allowImportingTsExtensions": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "noEmit": true,
+        "jsx": "react-jsx",
+        "strict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "noFallthroughCasesInSwitch": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "forceConsistentCasingInFileNames": true,
+        "baseUrl": ".",
+        "paths": {
+            "~api/*": ["./src/api/*"],
+            "~assets/*": ["./src/assets/*"],
+            "~components/*": ["./src/components/*"],
+            "~constants/*": ["./src/constants/*"],
+            "~context/*": ["./src/context/*"],
+            "~hooks/*": ["./src/hooks/*"],
+            "~i18n/*": ["./src/i18n/*"],
+            "~pages/*": ["./src/pages/*"],
+            "~services/*": ["./src/services/*"],
+            "~styles/*": ["./src/styles/*"],
+            "~theme/*": ["./src/theme/*"],
+            "~types/*": ["./src/types/*"],
+            "~utils/*": ["./src/utils/*"]
+        }
+    },
+    "include": ["src"],
+    "exclude": [
+        "src/**/*.test.ts",
+        "src/**/*.test.tsx",
+        "src/**/*.spec.ts",
+        "src/**/*.spec.tsx"
+    ],
+    "references": [{ "path": "./tsconfig.node.json" }]
+}

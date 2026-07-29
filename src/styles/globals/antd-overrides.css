@@ -1,0 +1,28 @@
+/* antd token orqali yechib bo'lmaydigan holatlar uchungina. Avval theme/index.tsx ni sina. */
+
+.ant-table-wrapper .ant-table {
+    border-radius: var(--radius-lg);
+}
+
+.ant-table-wrapper .ant-table-thead > tr > th {
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.ant-menu-inline .ant-menu-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    border-radius: var(--radius-md);
+}
+
+.ant-modal .ant-modal-header {
+    margin-bottom: var(--space-5);
+}
+
+.ant-form-item .ant-form-item-label > label {
+    font-weight: 500;
+    color: var(--black-300);
+}

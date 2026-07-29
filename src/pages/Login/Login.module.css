@@ -1,0 +1,58 @@
+.wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: var(--space-4);
+    background: var(--main-bg-color);
+}
+
+.card {
+    width: 100%;
+    max-width: 420px;
+    padding: var(--space-8);
+    background: var(--card-bg-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-6);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.logoMark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    background: var(--primary);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.title {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--black-500);
+}
+
+.subtitle {
+    margin: var(--space-1) 0 var(--space-6);
+    font-size: 13px;
+    color: var(--gray-500);
+}
+
+@media (width < 576px) {
+    .card {
+        padding: var(--space-5);
+    }
+}
