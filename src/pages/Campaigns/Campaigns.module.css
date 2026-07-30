@@ -1,0 +1,16 @@
+.cellName {
+    font-weight: 500;
+    color: var(--text-strong);
+}
+
+.rowFlex {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.delivered {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}

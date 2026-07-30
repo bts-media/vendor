@@ -6,31 +6,55 @@ if (import.meta.env.VITE_APP_MODE === 'development') {
 }
 
 /**
+ * Reklama beruvchi portali endpointlari (technical-brief §3 "Advertiser portal").
  * Dinamik segmentli URL — funksiya, statik URL — string.
  * Endpoint hech qachon komponent yoki service ichida qattiq yozilmaydi.
+ *
+ * ⚠️ Backend hali yo'q — service hooklari hozircha `~api/mock` orqali ishlaydi.
+ * Backend tayyor bo'lganda faqat hook ichidagi chaqiruv almashadi, URL'lar shu yerda qoladi.
  */
 export const urls = {
     auth: {
-        login: '/vendor/auth/login',
-        refresh: '/vendor/auth/refresh',
-        logout: '/vendor/auth/logout',
-        me: '/vendor/auth/me',
+        login: '/advertiser/auth/login',
+        refresh: '/advertiser/auth/refresh',
+        logout: '/advertiser/auth/logout',
+        me: '/advertiser/auth/me',
     },
-    profile: {
-        get: '/vendor/profile',
-        update: '/vendor/profile',
+    dashboard: {
+        stats: '/advertiser/dashboard/stats',
     },
-    stats: {
-        overview: '/vendor/stats/overview',
+    campaigns: {
+        get: '/advertiser/campaigns',
+        create: '/advertiser/campaigns',
+        getById: (id: string) => `/advertiser/campaigns/${id}`,
+        update: (id: string) => `/advertiser/campaigns/${id}`,
+        pause: (id: string) => `/advertiser/campaigns/${id}/pause`,
+        /** Sehrgardagi real-vaqt narx hisobi */
+        estimate: '/advertiser/campaigns/estimate',
     },
-    /** Namunaviy feature — o'z entity'ngiz bilan almashtiring (§17 checklist). */
-    items: {
-        get: '/vendor/items',
-        create: '/vendor/items',
-        update: (id: string) => `/vendor/items/${id}`,
-        getById: (id: string) => `/vendor/items/${id}`,
+    creatives: {
+        get: '/advertiser/creatives',
+        create: '/advertiser/creatives',
+        getById: (id: string) => `/advertiser/creatives/${id}`,
+        upload: '/advertiser/creatives/upload',
     },
-    upload: {
-        image: '/vendor/upload/image',
+    inventory: {
+        channels: '/advertiser/inventory/channels',
+        regions: '/advertiser/inventory/regions',
+        pricing: '/advertiser/inventory/pricing',
+    },
+    analytics: {
+        overview: '/advertiser/analytics/overview',
+        funnel: '/advertiser/analytics/funnel',
+        channels: '/advertiser/analytics/channels',
+        regions: '/advertiser/analytics/regions',
+        creatives: '/advertiser/analytics/creatives',
+    },
+    finance: {
+        overview: '/advertiser/finance/overview',
+        invoices: '/advertiser/finance/invoices',
+        invoiceById: (id: string) => `/advertiser/finance/invoices/${id}`,
+        payments: '/advertiser/finance/payments',
+        topUp: '/advertiser/finance/top-up',
     },
 };

@@ -32,7 +32,12 @@
 }
 
 .text-muted {
-    color: var(--gray-500);
+    color: var(--text-muted);
+}
+
+.text-strong {
+    color: var(--text-strong);
+    font-weight: 500;
 }
 
 .text-center {
@@ -43,9 +48,11 @@
     cursor: pointer;
 }
 
-.card {
-    background: var(--card-bg-color);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-lg);
-    padding: var(--space-5);
+/** Raqamlar ustunda tekis tursin — jadval va KPI'larda majburiy */
+.tnum {
+    font-variant-numeric: tabular-nums;
+}
+
+.mono {
+    font-family: var(--mono);
 }

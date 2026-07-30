@@ -1,26 +1,19 @@
-import { useThemeContext } from '~context/ThemeProvider';
 import useLanguage from '~hooks/useLanguage';
-import { statusColors, statusColorsDark } from '~theme/index';
-import styles from './StatusBadge.module.css';
+import { toneOf } from '~theme/index';
+import Badge from './Badge';
 
 interface StatusBadgeProps {
+    /** Backend qiymati: active | moderation | paid | overdue ... */
     status: string;
-    /** Tarjima kaliti sifatida ishlatilmasin desangiz — tayyor matn bering */
+    /** Tayyor matn berilsa i18n kaliti ishlatilmaydi */
     label?: string;
 }
 
+/** Status → ton + tarjima. Kalit konvensiyasi: t(`status_${status}`) */
 const StatusBadge = ({ status, label }: StatusBadgeProps) => {
     const { t } = useLanguage();
-    const { mode } = useThemeContext();
 
-    const palette = mode === 'dark' ? statusColorsDark : statusColors;
-    const colors = palette[status] ?? palette.draft;
-
-    return (
-        <span className={styles.badge} style={colors}>
-            {label ?? t(status)}
-        </span>
-    );
+    return <Badge tone={toneOf(status)}>{label ?? t(`status_${status}`)}</Badge>;
 };
 
 export default StatusBadge;

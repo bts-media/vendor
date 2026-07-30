@@ -1,0 +1,97 @@
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+}
+
+.item {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Kreativ eskizi — reklama beruvchining o'z brendi, BTS palitrasi aralashmaydi */
+.thumb {
+    height: 120px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    text-align: center;
+    padding: var(--space-3);
+}
+
+.body {
+    padding: 14px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+}
+
+.topRow {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-2);
+}
+
+.name {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-strong);
+    line-height: 1.35;
+}
+
+.meta {
+    font-size: 11.5px;
+    color: var(--text-subtle);
+}
+
+.stats {
+    display: flex;
+    gap: var(--space-5);
+    margin-top: auto;
+    padding-top: 10px;
+    border-top: 1px solid var(--border-soft);
+}
+
+.statLabel {
+    font-size: 11px;
+    color: var(--text-subtle);
+}
+
+.statValue {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-strong);
+    margin-top: 1px;
+}
+
+.rejected {
+    font-size: 11.5px;
+    line-height: 1.4;
+    color: var(--badge-danger-fg);
+    background: var(--badge-danger-bg);
+    border: 1px solid var(--badge-danger-border);
+    border-radius: var(--radius-md);
+    padding: 8px 10px;
+}
+
+.empty {
+    padding: var(--space-8);
+}
+
+@media (width < 1100px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (width < 640px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}

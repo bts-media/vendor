@@ -1,0 +1,30 @@
+.track {
+    height: 5px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.fill {
+    display: block;
+    height: 100%;
+    border-radius: 4px;
+    background: var(--or-500);
+    transition: width 0.25s ease;
+}
+
+.teal {
+    background: var(--tl-500);
+}
+
+.sky {
+    background: var(--sk-500);
+}
+
+.danger {
+    background: var(--danger);
+}
+
+.thick {
+    height: 8px;
+}

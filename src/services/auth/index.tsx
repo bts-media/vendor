@@ -1,9 +1,9 @@
-import { useCreate } from '~api/index';
+import { useMockMutation } from '~api/mock';
 import { useNotify } from '~components/NotificationProvider';
-import { urls } from '~constants/urls';
 import { useAuthContext } from '~context/AuthProvider';
 import useLanguage from '~hooks/useLanguage';
 import { CallbackType } from '~types/index';
+import { mockLogin } from './mock';
 import { LoginBody, LoginResponseType } from './type';
 
 export const useAuth = () => {
@@ -11,7 +11,8 @@ export const useAuth = () => {
     const notify = useNotify();
     const { login: setSession, logout } = useAuthContext();
 
-    const { mutate, isLoading } = useCreate<LoginBody, LoginResponseType>(urls.auth.login);
+    // Backend: useCreate<LoginBody, LoginResponseType>(urls.auth.login)
+    const { mutate, isLoading } = useMockMutation<LoginBody, LoginResponseType>(mockLogin);
 
     const login = (body: LoginBody, callback?: CallbackType) => {
         mutate(body, {
@@ -20,16 +21,13 @@ export const useAuth = () => {
                     accessToken: res.accessToken,
                     refreshToken: res.refreshToken,
                     role: res.role,
-                    vendorName: res.vendor?.name,
+                    advertiserName: res.advertiser?.name,
+                    billingType: res.advertiser?.billingType,
                 });
                 notify.success({ type: 'success', message: t('login_success') });
                 callback?.();
             },
-            onError: err =>
-                notify.error({
-                    type: 'error',
-                    message: err?.response?.data?.message || t('login_error'),
-                }),
+            onError: () => notify.error({ type: 'error', message: t('login_error') }),
         });
     };
 

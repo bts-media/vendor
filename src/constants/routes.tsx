@@ -3,8 +3,11 @@ import { Spin } from 'antd';
 import { lazy, ReactNode, Suspense } from 'react';
 
 const DashboardPage = lazy(() => import('~pages/Dashboard'));
-const ItemsPage = lazy(() => import('~pages/Items'));
-const ItemDetailPage = lazy(() => import('~pages/Items/sections/ItemDetail'));
+const CampaignsPage = lazy(() => import('~pages/Campaigns'));
+const CampaignBuilderPage = lazy(() => import('~pages/CampaignBuilder'));
+const CreativesPage = lazy(() => import('~pages/Creatives'));
+const AnalyticsPage = lazy(() => import('~pages/Analytics'));
+const FinancePage = lazy(() => import('~pages/Finance'));
 const SettingsPage = lazy(() => import('~pages/Settings'));
 
 export interface RoutesI {
@@ -38,25 +41,55 @@ export const routes: RoutesI[] = [
         ),
     },
     {
+        // Diqqat: "/campaigns/new" "/campaigns/:id" dan OLDIN turishi kerak emas —
+        // react-router v6 aniqroq segmentni o'zi tanlaydi, lekin o'qishga qulay bo'lsin.
         id: 2,
-        path: '/items',
+        path: '/campaigns/new',
         component: (
             <LoadingComponent>
-                <ItemsPage />
+                <CampaignBuilderPage />
             </LoadingComponent>
         ),
     },
     {
         id: 3,
-        path: '/items/:id',
+        path: '/campaigns',
         component: (
             <LoadingComponent>
-                <ItemDetailPage />
+                <CampaignsPage />
             </LoadingComponent>
         ),
     },
     {
         id: 4,
+        path: '/creatives',
+        component: (
+            <LoadingComponent>
+                <CreativesPage />
+            </LoadingComponent>
+        ),
+    },
+    {
+        id: 5,
+        path: '/analytics',
+        component: (
+            <LoadingComponent>
+                <AnalyticsPage />
+            </LoadingComponent>
+        ),
+    },
+    {
+        id: 6,
+        path: '/finance',
+        component: (
+            <LoadingComponent>
+                <FinancePage />
+            </LoadingComponent>
+        ),
+    },
+    {
+        // Sidebar'da yo'q — profil menyusidan ochiladi
+        id: 7,
         path: '/settings',
         component: (
             <LoadingComponent>

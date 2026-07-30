@@ -1,0 +1,14 @@
+/**
+ * Uchinchi tomon reklama beruvchisining brend belgisi.
+ * DESIGN-SYSTEM §5: reklama maydonining ichi mijozniki — rang props orqali keladi,
+ * BTS palitrasi bu yerga aralashmaydi.
+ */
+.mark {
+    display: grid;
+    place-items: center;
+    border-radius: var(--radius-sm);
+    color: #fff;
+    font-weight: 600;
+    flex: none;
+    line-height: 1;
+}

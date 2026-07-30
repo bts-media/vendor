@@ -1,34 +1,65 @@
-import { Avatar, Button, Dropdown, Layout } from 'antd';
-import { ChevronDown, Globe, LogOut, Menu as MenuIcon, Moon, Sun, User } from 'lucide-react';
+import { Button, Dropdown } from 'antd';
+import { Globe, Menu as MenuIcon, Moon, Sun } from 'lucide-react';
+import { Fragment } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LANGUAGES } from '~constants/data';
-import { useAuthContext } from '~context/AuthProvider';
+import { useHeaderSlot } from '~context/HeaderSlotProvider';
 import { useThemeContext } from '~context/ThemeProvider';
 import useLanguage from '~hooks/useLanguage';
 import { LangType } from '~types/index';
+import { cn } from '~utils/cn';
 import styles from '../AppRoutesLayout.module.css';
 
-const { Header } = Layout;
-
-interface AppHeaderProps {
-    collapsed: boolean;
-    onToggleSider: () => void;
+export interface CrumbItem {
+    labelKey: string;
+    to?: string;
 }
 
-const AppHeader = ({ collapsed, onToggleSider }: AppHeaderProps) => {
+interface AppHeaderProps {
+    crumbs: CrumbItem[];
+    isMobile: boolean;
+    onOpenDrawer: () => void;
+}
+
+const AppHeader = ({ crumbs, isMobile, onOpenDrawer }: AppHeaderProps) => {
     const { t, lang, setLang } = useLanguage();
     const { mode, toggle } = useThemeContext();
-    const { logout, role, vendorName } = useAuthContext();
+    const { extra } = useHeaderSlot();
     const navigate = useNavigate();
 
     return (
-        <Header className={styles.header}>
-            <Button
-                type='text'
-                icon={<MenuIcon size={20} />}
-                onClick={onToggleSider}
-                aria-label={collapsed ? 'expand sidebar' : 'collapse sidebar'}
-            />
+        <header className={styles.topbar}>
+            {isMobile && (
+                <Button
+                    className={styles.burger}
+                    type='text'
+                    icon={<MenuIcon size={20} />}
+                    onClick={onOpenDrawer}
+                    aria-label={t('collapse_sidebar')}
+                />
+            )}
+
+            <div className={styles.crumb}>
+                {crumbs.map((crumb, index) => {
+                    const isLast = index === crumbs.length - 1;
+                    return (
+                        <Fragment key={crumb.labelKey}>
+                            {index > 0 && ' / '}
+                            <span
+                                className={cn(
+                                    isLast ? styles.crumbCurrent : crumb.to && styles.crumbLink,
+                                )}
+                                onClick={!isLast && crumb.to ? () => navigate(crumb.to!) : undefined}
+                            >
+                                {t(crumb.labelKey)}
+                            </span>
+                        </Fragment>
+                    );
+                })}
+            </div>
+
+            {/* Sahifa joylashtiradigan element (masalan sehrgar qadamlari) */}
+            <div className={styles.headerSlot}>{extra}</div>
 
             <div className={styles.headerActions}>
                 <Dropdown
@@ -39,8 +70,8 @@ const AppHeader = ({ collapsed, onToggleSider }: AppHeaderProps) => {
                         onClick: ({ key }) => setLang(key as LangType),
                     }}
                 >
-                    <Button type='text' icon={<Globe size={18} />}>
-                        {LANGUAGES.find(l => l.value === lang)?.short}
+                    <Button type='text' icon={<Globe size={18} />} aria-label={t('language')}>
+                        {LANGUAGES.find(item => item.value === lang)?.short}
                     </Button>
                 </Dropdown>
 
@@ -50,36 +81,8 @@ const AppHeader = ({ collapsed, onToggleSider }: AppHeaderProps) => {
                     aria-label={mode === 'dark' ? t('theme_light') : t('theme_dark')}
                     icon={mode === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
                 />
-
-                <Dropdown
-                    trigger={['click']}
-                    menu={{
-                        items: [
-                            {
-                                key: 'profile',
-                                label: t('profile'),
-                                icon: <User size={14} />,
-                                onClick: () => navigate('/settings'),
-                            },
-                            { type: 'divider' },
-                            {
-                                key: 'logout',
-                                label: t('logout'),
-                                icon: <LogOut size={14} />,
-                                danger: true,
-                                onClick: logout,
-                            },
-                        ],
-                    }}
-                >
-                    <Button type='text' style={{ height: 'auto', padding: '4px 8px' }}>
-                        <Avatar size={28} icon={<User size={16} />} />
-                        <span className={styles.userName}>{vendorName ?? role ?? 'Vendor'}</span>
-                        <ChevronDown size={14} />
-                    </Button>
-                </Dropdown>
             </div>
-        </Header>
+        </header>
     );
 };
 

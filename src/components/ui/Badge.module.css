@@ -1,0 +1,65 @@
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    border: 1px solid transparent;
+    font-size: 11.5px;
+    font-weight: 500;
+    line-height: 18px;
+    white-space: nowrap;
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex: none;
+}
+
+/* Kontrast qoidasi (DESIGN-SYSTEM §4): ochiq fonda matn har doim 700 darajada */
+.teal {
+    background: var(--badge-teal-bg);
+    color: var(--badge-teal-fg);
+    border-color: var(--badge-teal-border);
+}
+.teal .dot {
+    background: var(--badge-teal-dot);
+}
+
+.orange {
+    background: var(--badge-orange-bg);
+    color: var(--badge-orange-fg);
+    border-color: var(--badge-orange-border);
+}
+.orange .dot {
+    background: var(--badge-orange-dot);
+}
+
+.sky {
+    background: var(--badge-sky-bg);
+    color: var(--badge-sky-fg);
+    border-color: var(--badge-sky-border);
+}
+.sky .dot {
+    background: var(--badge-sky-dot);
+}
+
+.gray {
+    background: var(--badge-gray-bg);
+    color: var(--badge-gray-fg);
+    border-color: var(--badge-gray-border);
+}
+.gray .dot {
+    background: var(--badge-gray-dot);
+}
+
+.danger {
+    background: var(--badge-danger-bg);
+    color: var(--badge-danger-fg);
+    border-color: var(--badge-danger-border);
+}
+.danger .dot {
+    background: var(--badge-danger-dot);
+}

@@ -1,4 +1,4 @@
-import { Button, Flex } from 'antd';
+import { Button } from 'antd';
 import { Plus, RefreshCw } from 'lucide-react';
 import { ReactNode } from 'react';
 import useLanguage from '~hooks/useLanguage';
@@ -13,7 +13,7 @@ interface PageHeaderProps {
     refreshButton?: boolean;
     onRefresh?: () => void;
     isRefreshing?: boolean;
-    /** Asosiy amal tugmasi ("Qo'shish") */
+    /** Asosiy amal tugmasi (brend CTA) */
     isBtnIsVisible?: boolean;
     buttonText?: string;
     handleClick?: () => void;
@@ -21,6 +21,7 @@ interface PageHeaderProps {
     extra?: ReactNode;
 }
 
+/** Sahifa sarlavhasi (mockup: .page-head) */
 const PageHeader = ({
     title,
     subtitle,
@@ -36,13 +37,13 @@ const PageHeader = ({
     const { isMobile } = useWindowSize();
 
     return (
-        <Flex className={styles.header} align='center' justify='space-between' gap={12} wrap>
+        <div className={styles.header}>
             <div>
                 <h1 className={styles.title}>{title}</h1>
-                {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
+                {subtitle && <p className={styles.desc}>{subtitle}</p>}
             </div>
 
-            <Flex align='center' gap={8} wrap>
+            <div className={styles.actions}>
                 {extra}
 
                 {refreshButton && (
@@ -59,14 +60,14 @@ const PageHeader = ({
                     <Button
                         type='primary'
                         size={isMobile ? 'small' : 'middle'}
-                        icon={<Plus size={16} />}
+                        icon={<Plus size={16} strokeWidth={2.2} />}
                         onClick={handleClick}
                     >
                         {buttonText ?? t('add')}
                     </Button>
                 )}
-            </Flex>
-        </Flex>
+            </div>
+        </div>
     );
 };
 

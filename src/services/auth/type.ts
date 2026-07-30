@@ -7,8 +7,10 @@ export type LoginResponseType = {
     accessToken: string;
     refreshToken: string;
     role?: string;
-    vendor?: {
+    advertiser?: {
         id: string;
         name: string;
+        /** PRODUCT-SPEC §3.2: prepaid (balans) yoki postpaid (hisob-faktura) */
+        billingType: 'prepaid' | 'postpaid';
     };
 };

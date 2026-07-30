@@ -1,0 +1,132 @@
+.topGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+}
+
+.kpiGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
+}
+
+.balanceHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+
+.balanceLabel {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.balanceValue {
+    font-size: 25px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--text-strong);
+    margin-top: 12px;
+}
+
+.balanceUnit {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-subtle);
+    margin-left: 4px;
+}
+
+.balanceFoot {
+    font-size: 12px;
+    color: var(--text-subtle);
+    margin-top: 8px;
+}
+
+.warning {
+    font-size: 12px;
+    color: var(--accent-text);
+    font-weight: 500;
+    margin-top: 8px;
+}
+
+.bar {
+    margin-top: 14px;
+}
+
+.methodGrid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-3);
+}
+
+.topUpRow {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+    flex-wrap: wrap;
+}
+
+.fieldLabel {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+.section {
+    margin-bottom: var(--space-4);
+}
+
+.headNote {
+    font-size: 12px;
+    color: var(--text-subtle);
+}
+
+.cellStrong {
+    font-weight: 500;
+    color: var(--text-strong);
+}
+
+.cellSub {
+    font-size: 11.5px;
+    color: var(--text-subtle);
+    margin-top: 1px;
+}
+
+.vatNote {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    background: var(--badge-teal-bg);
+    border: 1px solid var(--badge-teal-border);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.45;
+}
+
+.vatNote svg {
+    color: var(--badge-teal-fg);
+    flex: none;
+    margin-top: 1px;
+}
+
+@media (width < 980px) {
+    .topGrid,
+    .kpiGrid,
+    .methodGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (width >= 640px) and (width < 980px) {
+    .methodGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

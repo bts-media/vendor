@@ -11,7 +11,7 @@ import {
 } from 'react';
 import { ensureValidAccessToken } from '~api/tokenManager';
 import { clearLocalStorage, getLocalstorage, setLocalstorage } from '~utils/helpers';
-import { IAuthContextData, LoginPayload } from './types';
+import { BillingType, IAuthContextData, LoginPayload } from './types';
 
 export const AuthContext = createContext({} as IAuthContextData);
 
@@ -20,8 +20,11 @@ export const useAuthContext = () => useContext(AuthContext);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [token, setToken] = useState<string | null>(() => getLocalstorage('accessToken'));
     const [role, setRole] = useState<string | null>(() => getLocalstorage('role'));
-    const [vendorName, setVendorName] = useState<string | null>(() =>
-        getLocalstorage('vendorName'),
+    const [advertiserName, setAdvertiserName] = useState<string | null>(() =>
+        getLocalstorage('advertiserName'),
+    );
+    const [billingType, setBillingType] = useState<BillingType>(
+        () => (getLocalstorage('billingType') as BillingType) || 'postpaid',
     );
     const [isChecking, setIsChecking] = useState(true);
 
@@ -34,7 +37,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             if (!valid) {
                 clearLocalStorage();
                 setRole(null);
-                setVendorName(null);
+                setAdvertiserName(null);
             }
             setToken(valid);
             setIsChecking(false);
@@ -49,17 +52,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setLocalstorage('accessToken', payload.accessToken);
         setLocalstorage('refreshToken', payload.refreshToken);
         if (payload.role) setLocalstorage('role', payload.role);
-        if (payload.vendorName) setLocalstorage('vendorName', payload.vendorName);
+        if (payload.advertiserName) setLocalstorage('advertiserName', payload.advertiserName);
+        if (payload.billingType) setLocalstorage('billingType', payload.billingType);
         setToken(payload.accessToken);
         setRole(payload.role ?? null);
-        setVendorName(payload.vendorName ?? null);
+        setAdvertiserName(payload.advertiserName ?? null);
+        setBillingType(payload.billingType ?? 'postpaid');
     }, []);
 
     const logout = useCallback(() => {
         clearLocalStorage();
         setToken(null);
         setRole(null);
-        setVendorName(null);
+        setAdvertiserName(null);
     }, []);
 
     const value = useMemo<IAuthContextData>(
@@ -67,11 +72,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             isAuthenticated: Boolean(token),
             isChecking,
             role,
-            vendorName,
+            advertiserName,
+            billingType,
             login,
             logout,
         }),
-        [token, isChecking, role, vendorName, login, logout],
+        [token, isChecking, role, advertiserName, billingType, login, logout],
     );
 
     if (isChecking) {

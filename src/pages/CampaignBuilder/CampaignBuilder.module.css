@@ -1,0 +1,360 @@
+/* ---------- Qadamlar indikatori (topbar ichida) ---------- */
+
+.steps {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--text-subtle);
+    background: none;
+    border: none;
+    font-family: inherit;
+    cursor: pointer;
+    padding: 0;
+}
+
+.step:disabled {
+    cursor: default;
+}
+
+.stepNum {
+    width: 21px;
+    height: 21px;
+    border-radius: 50%;
+    background: var(--surface-alt);
+    display: grid;
+    place-items: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-subtle);
+    flex: none;
+}
+
+.stepActive {
+    color: var(--text-strong);
+}
+
+.stepActive .stepNum {
+    background: var(--surface-inverse);
+    color: var(--white);
+}
+
+.stepDone .stepNum {
+    background: var(--tl-500);
+    color: #fff;
+}
+
+.stepLine {
+    width: 24px;
+    height: 1.5px;
+    background: var(--border-strong);
+    flex: none;
+}
+
+@media (width < 900px) {
+    .stepLabel {
+        display: none;
+    }
+
+    .stepLine {
+        width: 12px;
+    }
+}
+
+/* ---------- Sehrgar tarmog'i ---------- */
+
+.builder {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 22px;
+    margin-top: var(--space-6);
+    align-items: start;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-width: 0;
+}
+
+.channelGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-3);
+}
+
+.goalRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-3);
+    margin-bottom: 2px;
+}
+
+.goalValue {
+    font-size: 27px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-strong);
+}
+
+.goalUnit {
+    font-size: 13px;
+    color: var(--text-subtle);
+}
+
+.goalScale {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11.5px;
+    color: var(--text-subtle);
+}
+
+.durationRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-top: var(--space-5);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--border-soft);
+}
+
+.fieldLabel {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+/* ---------- Xulosa paneli ---------- */
+
+.summary {
+    position: sticky;
+    top: calc(var(--header-height) + var(--space-5));
+}
+
+.sumCreative {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 16px 18px;
+    /* To'q sirt navy ottenkali — DESIGN-SYSTEM §4 */
+    background: linear-gradient(135deg, var(--nv-900), var(--nv-800));
+}
+
+.sumThumb {
+    width: 46px;
+    height: 46px;
+    border-radius: 11px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-weight: 800;
+    font-size: 13px;
+    flex: none;
+    text-align: center;
+    line-height: 1.1;
+    padding: 2px;
+}
+
+.sumCname {
+    color: #fff;
+    font-size: 13.5px;
+    font-weight: 600;
+}
+
+.sumCsub {
+    color: var(--nv-300);
+    font-size: 11.5px;
+    margin-top: 2px;
+}
+
+.sumRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 11px 18px;
+    border-bottom: 1px solid var(--border-soft);
+    font-size: 13px;
+}
+
+.sumRow:last-child {
+    border-bottom: none;
+}
+
+.sumKey {
+    color: var(--text-muted);
+    flex: none;
+}
+
+.sumValue {
+    color: var(--text-strong);
+    font-weight: 500;
+    text-align: right;
+}
+
+.estBanner {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    background: var(--badge-teal-bg);
+    border: 1px solid var(--badge-teal-border);
+    border-radius: var(--radius-md);
+    padding: 11px 13px;
+    margin: 0 18px 16px;
+    font-size: 12px;
+    color: var(--text);
+    line-height: 1.4;
+}
+
+.estBanner svg {
+    color: var(--badge-teal-fg);
+    flex: none;
+    margin-top: 1px;
+}
+
+.sumTotal {
+    background: var(--surface-alt);
+    padding: 16px 18px;
+    border-top: 1px solid var(--border);
+}
+
+.sumTotalRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--space-3);
+}
+
+.sumTotalLabel {
+    font-size: 13px;
+    color: var(--text);
+    font-weight: 500;
+}
+
+.sumTotalValue {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-strong);
+}
+
+.sumNote {
+    font-size: 11.5px;
+    color: var(--text-subtle);
+    margin-top: 5px;
+}
+
+/* ---------- Ko'rib chiqish ---------- */
+
+.review {
+    max-width: 720px;
+    margin-top: var(--space-6);
+}
+
+.reviewHero {
+    background: linear-gradient(135deg, var(--badge-teal-bg), var(--surface));
+    border: 1px solid var(--badge-teal-border);
+    border-radius: var(--radius-card);
+    padding: 22px;
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    margin-bottom: 18px;
+}
+
+.reviewIcon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--tl-500);
+    display: grid;
+    place-items: center;
+    color: #fff;
+    flex: none;
+}
+
+.reviewTitle {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text-strong);
+}
+
+.reviewDesc {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 3px;
+}
+
+.reviewActions {
+    display: flex;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+/* ---------- Kreativ tanlash ---------- */
+
+.creativeGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-3);
+}
+
+.creativeThumb {
+    width: 100%;
+    height: 64px;
+    border-radius: var(--radius-md);
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-weight: 800;
+    font-size: 15px;
+    margin-bottom: 11px;
+}
+
+.uploadBox {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 15px;
+    border: 1.5px dashed var(--border-strong);
+    border-radius: var(--radius-lg);
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.hint {
+    font-size: 12px;
+    color: var(--text-subtle);
+    margin-top: var(--space-3);
+}
+
+@media (width < 1100px) {
+    .builder {
+        grid-template-columns: 1fr;
+    }
+
+    .summary {
+        position: static;
+    }
+
+    .creativeGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (width < 640px) {
+    .channelGrid,
+    .creativeGrid {
+        grid-template-columns: 1fr;
+    }
+}
