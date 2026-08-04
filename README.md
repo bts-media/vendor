@@ -4,8 +4,8 @@ Mijozlarning o'z-o'ziga xizmat ko'rsatish kabineti: kampaniya yaratish, yetkazib
 kuzatish, kreativlar, tahlillar va moliya.
 
 React + TypeScript + Vite + Ant Design + React-Query. Arxitektura `.claude/SKILL.md`
-(react-admin-boilerplate) andozasiga, UI esa `../files/advertiser.html` mockupiga va
-`../files/brand/DESIGN-SYSTEM.md` dizayn tizimiga mos.
+(react-admin-boilerplate) andozasiga, UI esa `../btc-mock/advertiser.html` mockupiga va
+`../btc-mock/brand/DESIGN-SYSTEM.md` dizayn tizimiga mos.
 
 ## Boshlash
 
@@ -130,7 +130,7 @@ mockupdagidek topbar ichida turadi).
 
 ## Atamalar
 
-`../files/brand/PRODUCT-SPEC.md` §1 lug'ati majburiy: ko'rsatish, **tasdiqlangan ko'rsatish**,
+`../btc-mock/brand/PRODUCT-SPEC.md` §1 lug'ati majburiy: ko'rsatish, **tasdiqlangan ko'rsatish**,
 kreativ, sur'at, skanerlash darajasi, hisob-faktura, **QQS 12%**, qarzdorlik, muddati o'tgan.
 i18n kalitlari shu atamalarga bog'langan.
 
