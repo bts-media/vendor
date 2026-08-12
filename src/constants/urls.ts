@@ -5,13 +5,15 @@ if (import.meta.env.VITE_APP_MODE === 'development') {
     baseURL = import.meta.env.VITE_API_PRODUCTION_URL;
 }
 
+/** Trailing slash bo'lsa `${baseURL}${url}` ikki slash beradi — bir marta kesib qo'yamiz. */
+baseURL = (baseURL ?? '').replace(/\/+$/, '');
+
 /**
  * Reklama beruvchi portali endpointlari (technical-brief §3 "Advertiser portal").
  * Dinamik segmentli URL — funksiya, statik URL — string.
  * Endpoint hech qachon komponent yoki service ichida qattiq yozilmaydi.
  *
- * ⚠️ Backend hali yo'q — service hooklari hozircha `~api/mock` orqali ishlaydi.
- * Backend tayyor bo'lganda faqat hook ichidagi chaqiruv almashadi, URL'lar shu yerda qoladi.
+ * Barcha marshrut `/advertiser/*` prefiksi ostida (Swagger: `[ADVERTISER]` guruhi).
  */
 export const urls = {
     auth: {
@@ -49,6 +51,9 @@ export const urls = {
         channels: '/advertiser/analytics/channels',
         regions: '/advertiser/analytics/regions',
         creatives: '/advertiser/analytics/creatives',
+    },
+    uploads: {
+        create: '/uploads',
     },
     finance: {
         overview: '/advertiser/finance/overview',

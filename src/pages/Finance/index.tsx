@@ -80,7 +80,7 @@ const FinancePage = () => {
                             icon={<Clock size={15} />}
                             tone='danger'
                             footAccent
-                            foot={`${finance.overdueInvoiceNumber} · ${finance.overduePeriod}`}
+                            foot={`${finance.overdueCount} ${t('invoices_count')}`}
                         />
                     </div>
 

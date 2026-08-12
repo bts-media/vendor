@@ -1,6 +1,8 @@
-import { Button, Flex, Form, Input, Modal, Segmented } from 'antd';
+import { Button, Flex, Form, Input, Modal, Segmented, Select, Upload } from 'antd';
+import { UploadCloud } from 'lucide-react';
 import { useEffect } from 'react';
 import useLanguage from '~hooks/useLanguage';
+import { useCampaigns } from '~services/campaigns';
 import { CreateCreativeBody } from '~services/creatives/type';
 
 interface CreativeFormModalProps {
@@ -13,9 +15,11 @@ interface CreativeFormModalProps {
 const CreativeFormModal = ({ open, loading, onCancel, onSubmit }: CreativeFormModalProps) => {
     const [form] = Form.useForm<CreateCreativeBody>();
     const { t } = useLanguage();
+    // Kreativ doim kampaniyaga biriktiriladi — backend `campaignId` ni talab qiladi
+    const { allCampaigns, isLoading: isCampaignsLoading } = useCampaigns();
 
     useEffect(() => {
-        if (open) form.setFieldsValue({ kind: 'parcel', badge: '' });
+        if (open) form.setFieldsValue({ kind: 'parcel' });
     }, [open, form]);
 
     const handleCancel = () => {
@@ -35,6 +39,21 @@ const CreativeFormModal = ({ open, loading, onCancel, onSubmit }: CreativeFormMo
         >
             <Form form={form} layout='vertical' onFinish={onSubmit} autoComplete='off'>
                 <Form.Item
+                    name='campaignId'
+                    label={t('campaign')}
+                    rules={[{ required: true, message: t('required') }]}
+                >
+                    <Select
+                        loading={isCampaignsLoading}
+                        placeholder={t('campaign')}
+                        options={allCampaigns.map(campaign => ({
+                            value: campaign.id,
+                            label: campaign.name,
+                        }))}
+                    />
+                </Form.Item>
+
+                <Form.Item
                     name='name'
                     label={t('creative_name_field')}
                     rules={[{ required: true, message: t('required') }]}
@@ -52,11 +71,22 @@ const CreativeFormModal = ({ open, loading, onCancel, onSubmit }: CreativeFormMo
                 </Form.Item>
 
                 <Form.Item
-                    name='badge'
-                    label={t('creative_preview_label')}
+                    name='file'
+                    label={t('creative_upload')}
+                    valuePropName='file'
+                    getValueFromEvent={event => event?.file}
                     rules={[{ required: true, message: t('required') }]}
                 >
-                    <Input maxLength={12} placeholder='−20%' />
+                    <Upload.Dragger
+                        multiple={false}
+                        showUploadList={{ showRemoveIcon: false }}
+                        accept='image/png,image/jpeg,video/mp4'
+                        beforeUpload={() => false}
+                        maxCount={1}
+                    >
+                        <UploadCloud size={22} />
+                        <div style={{ marginTop: 6, fontSize: 13 }}>{t('creative_upload_hint')}</div>
+                    </Upload.Dragger>
                 </Form.Item>
 
                 <p

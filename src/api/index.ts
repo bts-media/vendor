@@ -7,7 +7,45 @@ interface IEditData<T> {
     item: T;
 }
 
-type QueryOptions = { enabled?: boolean; refetchInterval?: number | false };
+type QueryOptions = {
+    enabled?: boolean;
+    refetchInterval?: number | false;
+    keepPreviousData?: boolean;
+    staleTime?: number;
+};
+
+/** Backend massiv parametrni `?statusIds=1&statusIds=2` ko'rinishida kutadi. */
+export type QueryParams = Record<
+    string,
+    string | number | boolean | (string | number)[] | undefined | null
+>;
+
+/** Bo'sh qiymatlar tashlab yuboriladi — `?search=` kabi ma'nosiz parametr ketmasin. */
+export const cleanParams = (params?: QueryParams): Record<string, unknown> | undefined => {
+    if (!params) return undefined;
+    const entries = Object.entries(params).filter(([, value]) => {
+        if (value === undefined || value === null || value === '') return false;
+        if (Array.isArray(value)) return value.length > 0;
+        return true;
+    });
+    return entries.length ? Object.fromEntries(entries) : undefined;
+};
+
+/**
+ * Asosiy GET hooki: parametrlar obyekt sifatida beriladi va query keyga ham
+ * kiradi — filtr o'zgarganda react-query o'zi qayta so'raydi.
+ */
+const useApiQuery = <T>(
+    key: unknown[],
+    url: string,
+    params?: QueryParams,
+    options?: QueryOptions,
+) =>
+    useQuery<T>(
+        [...key, cleanParams(params) ?? null],
+        async () => (await Api.get<T>(url, { params: cleanParams(params) })) as unknown as T,
+        options,
+    );
 
 /**
  * Sahifalangan / query-string'li GET.
@@ -51,6 +89,7 @@ const useCreateMedia = <T, U, V = Error>(url: string) =>
     );
 
 export {
+    useApiQuery,
     useCreate,
     useCreateMedia,
     useCustomGetQuery,

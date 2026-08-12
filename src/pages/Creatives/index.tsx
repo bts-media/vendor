@@ -61,18 +61,25 @@ const CreativesPage = () => {
                     {creativesData.map(creative => (
                         <Card key={creative.id}>
                             <div className={styles.item}>
-                                <div
-                                    className={styles.thumb}
-                                    style={{ background: creative.brandColor }}
-                                >
-                                    {creative.badge}
-                                </div>
+                                {creative.fileUrl ? (
+                                    <img
+                                        className={styles.thumb}
+                                        src={creative.fileUrl}
+                                        alt={creative.name}
+                                    />
+                                ) : (
+                                    <div className={styles.thumb}>
+                                        {creative.name.charAt(0).toUpperCase()}
+                                    </div>
+                                )}
 
                                 <div className={styles.body}>
                                     <div className={styles.topRow}>
                                         <div>
                                             <div className={styles.name}>{creative.name}</div>
                                             <div className={styles.meta}>
+                                                {creative.size}
+                                                {' · '}
                                                 {creative.kind === 'parcel'
                                                     ? t('creative_type_parcel')
                                                     : t('creative_type_screen')}
@@ -89,9 +96,9 @@ const CreativesPage = () => {
                                         </div>
                                     )}
 
-                                    {creative.rejectionReason && (
+                                    {creative.status === 'rejected' && (
                                         <div className={styles.rejected}>
-                                            {creative.rejectionReason}
+                                            {t('creative_rejected_note')}
                                         </div>
                                     )}
 

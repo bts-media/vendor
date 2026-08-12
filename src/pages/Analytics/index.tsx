@@ -1,4 +1,4 @@
-import { Skeleton } from 'antd';
+import { Segmented, Skeleton } from 'antd';
 import { Eye, QrCode, TrendingUp, Users, Wallet } from 'lucide-react';
 import { useState } from 'react';
 import { PageHeader, PageTitle, StatCard } from '~components/index';
@@ -15,13 +15,12 @@ import styles from './Analytics.module.css';
 import ChannelPerformance from './sections/ChannelPerformance';
 import ConversionFunnel from './sections/ConversionFunnel';
 import CreativePerformance from './sections/CreativePerformance';
-import ImpressionsTrend from './sections/ImpressionsTrend';
 import RegionBreakdown from './sections/RegionBreakdown';
 
 const AnalyticsPage = () => {
     const { t } = useLanguage();
     const [period, setPeriod] = useState<PeriodKey>('year');
-    const { analytics, trend, isLoading, refetchAnalytics } = useAnalytics(period);
+    const { analytics, isLoading, refetchAnalytics } = useAnalytics(period);
 
     return (
         <div>
@@ -33,6 +32,18 @@ const AnalyticsPage = () => {
                 refreshButton
                 onRefresh={refetchAnalytics}
                 isRefreshing={isLoading}
+                extra={
+                    <Segmented
+                        size='small'
+                        value={period}
+                        onChange={value => setPeriod(value as PeriodKey)}
+                        options={[
+                            { value: '30d', label: t('period_30d') },
+                            { value: '90d', label: t('period_90d') },
+                            { value: 'year', label: t('period_year') },
+                        ]}
+                    />
+                }
             />
 
             {isLoading || !analytics ? (
@@ -59,8 +70,8 @@ const AnalyticsPage = () => {
                             tone='teal'
                         />
                         <StatCard
-                            label={t('audience')}
-                            value={formatCompactCount(analytics.kpis.audience)}
+                            label={t('unique_scans')}
+                            value={formatCompactCount(analytics.kpis.uniqueScans)}
                             icon={<Users size={15} />}
                             tone='gray'
                         />
@@ -73,9 +84,7 @@ const AnalyticsPage = () => {
                         />
                     </div>
 
-                    <ImpressionsTrend trend={trend} period={period} onPeriodChange={setPeriod} />
-
-                    <div className={styles.grid2}>
+                        <div className={styles.grid2}>
                         <ConversionFunnel funnel={analytics.funnel} />
                         <ChannelPerformance channels={analytics.channels} />
                     </div>

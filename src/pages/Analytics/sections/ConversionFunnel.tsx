@@ -20,7 +20,12 @@ const ConversionFunnel = ({ funnel }: ConversionFunnelProps) => {
             tone: 'accent' as const,
         },
         { key: 'funnel_scans', value: funnel.scans, previous: funnel.delivered, tone: 'sky' as const },
-        { key: 'funnel_clicks', value: funnel.clicks, previous: funnel.scans, tone: 'teal' as const },
+        {
+            key: 'funnel_unique_scans',
+            value: funnel.uniqueScans,
+            previous: funnel.scans,
+            tone: 'teal' as const,
+        },
     ];
 
     return (

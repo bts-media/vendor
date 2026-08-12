@@ -106,9 +106,7 @@ const DashboardPage = () => {
                         value={stats.activeCampaigns}
                         icon={<CircleCheck size={15} />}
                         tone='teal'
-                        foot={`${formatCompactCount(stats.deliveringImpressions)} ${t(
-                            'kpi_active_campaigns_foot',
-                        )}`}
+                        foot={`${stats.pendingApproval} ${t('kpi_pending_approval_foot')}`}
                     />
                     <StatCard
                         label={t('kpi_month_impressions')}

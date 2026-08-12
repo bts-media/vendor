@@ -57,21 +57,32 @@ const TargetingStep = ({
                 : [...state.regions, id],
         });
 
-    /** Chip faol bo'lishi joriy tanlovdan kelib chiqadi — alohida holat saqlanmaydi */
+    /**
+     * Chip faol bo'lishi joriy tanlovdan kelib chiqadi — alohida holat saqlanmaydi.
+     * "Yirik hududlar" — hajmi bo'yicha yuqori uchtasi (backend shahar/viloyat
+     * ajratmaydi, shuning uchun tanlov posilka oqimiga tayanadi).
+     */
+    const topRegionIds = useMemo(
+        () =>
+            [...regions]
+                .sort((a, b) => b.monthlyVolume - a.monthlyVolume)
+                .slice(0, 3)
+                .map(region => region.id),
+        [regions],
+    );
+
     const activeChip = useMemo(() => {
         if (!state.regions.length) return 'none';
         if (state.regions.length === regions.length) return 'all';
-        const cityIds = regions.filter(region => region.isCity).map(region => region.id);
-        const isCitiesOnly =
-            state.regions.length === cityIds.length &&
-            cityIds.every(id => state.regions.includes(id));
-        return isCitiesOnly ? 'cities' : 'custom';
-    }, [state.regions, regions]);
+        const isTopOnly =
+            state.regions.length === topRegionIds.length &&
+            topRegionIds.every(id => state.regions.includes(id));
+        return isTopOnly ? 'cities' : 'custom';
+    }, [state.regions, regions, topRegionIds]);
 
     const handleChip = (key: string) => {
         if (key === 'all') onChange({ regions: regions.map(region => region.id) });
-        if (key === 'cities')
-            onChange({ regions: regions.filter(region => region.isCity).map(region => region.id) });
+        if (key === 'cities') onChange({ regions: topRegionIds });
         if (key === 'none') onChange({ regions: [] });
     };
 
@@ -176,8 +187,8 @@ const SelectableChannel = ({
 
     return (
         <SelectableCard
-            name={t(channel.labelKey)}
-            desc={t(channel.descKey)}
+            name={t(`channel_${channel.key}`)}
+            desc={channel.description ?? t(`channel_${channel.key}_desc`)}
             icon={CHANNEL_ICON[channel.key]}
             tone={CHANNEL_TONE[channel.key]}
             selected={selected}

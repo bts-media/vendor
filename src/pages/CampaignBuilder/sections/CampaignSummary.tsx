@@ -2,12 +2,13 @@ import { Button } from 'antd';
 import { ArrowRight, Info } from 'lucide-react';
 import { Card } from '~components/index';
 import useLanguage from '~hooks/useLanguage';
-import { CreativeType } from '~services/creatives/type';
+import { UploadedCreative } from '~services/creatives/type';
 import { formatCompactSum, formatNumber } from '~utils/helpers';
 import styles from '../CampaignBuilder.module.css';
 
 export interface SummaryData {
-    creative?: CreativeType;
+    /** Sehrgarda yuklangan, hali biriktirilmagan fayl */
+    creative?: UploadedCreative;
     campaignName: string;
     channelLabels: string;
     regionLabels: string;
@@ -19,11 +20,11 @@ export interface SummaryData {
 }
 
 interface CampaignSummaryProps extends SummaryData {
+    /** Narx backenddan so'ralmoqda — summa o'rniga "…" ko'rsatiladi */
+    isEstimating?: boolean;
     /** Keyingi qadam tugmasining matni — oxirgi qadamdan oldin "Ko'rib chiqishga o'tish" */
     nextLabel: string;
     onNext: () => void;
-    onSaveDraft: () => void;
-    isSaving: boolean;
 }
 
 const CampaignSummary = ({
@@ -36,10 +37,9 @@ const CampaignSummary = ({
     estimatedScans,
     estimatedCost,
     cpm,
+    isEstimating,
     nextLabel,
     onNext,
-    onSaveDraft,
-    isSaving,
 }: CampaignSummaryProps) => {
     const { t } = useLanguage();
 
@@ -55,12 +55,13 @@ const CampaignSummary = ({
         <Card className={styles.summary} title={t('summary_title')}>
             <div className={styles.sumCreative}>
                 {/* Kreativ eskizi — reklama beruvchining o'z brendi (DESIGN-SYSTEM §5) */}
-                <div
-                    className={styles.sumThumb}
-                    style={{ background: creative?.brandColor ?? 'var(--nv-700)' }}
-                >
-                    {creative?.badge ?? '—'}
-                </div>
+                {creative?.fileUrl ? (
+                    <img className={styles.sumThumb} src={creative.fileUrl} alt={creative.name} />
+                ) : (
+                    <div className={styles.sumThumb} style={{ background: 'var(--nv-700)' }}>
+                        {creative?.name.charAt(0).toUpperCase() ?? '—'}
+                    </div>
+                )}
                 <div style={{ minWidth: 0 }}>
                     <div className={styles.sumCname}>{campaignName || t('campaign_name')}</div>
                     <div className={styles.sumCsub}>{creative?.name ?? t('creative_required')}</div>
@@ -85,7 +86,7 @@ const CampaignSummary = ({
                 <div className={styles.sumTotalRow}>
                     <span className={styles.sumTotalLabel}>{t('est_total')}</span>
                     <span className={`${styles.sumTotalValue} tnum`}>
-                        {formatCompactSum(estimatedCost)}
+                        {isEstimating ? '…' : formatCompactSum(estimatedCost)}
                     </span>
                 </div>
                 <div className={styles.sumNote}>
@@ -102,15 +103,6 @@ const CampaignSummary = ({
                     iconPosition='end'
                 >
                     {nextLabel}
-                </Button>
-                <Button
-                    type='text'
-                    block
-                    style={{ marginTop: 9 }}
-                    onClick={onSaveDraft}
-                    loading={isSaving}
-                >
-                    {t('save_draft')}
                 </Button>
             </div>
         </Card>
