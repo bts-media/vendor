@@ -1,5 +1,5 @@
 import { Button, Form, Input } from 'antd';
-import { Lock, User } from 'lucide-react';
+import { Lock, Mail } from 'lucide-react';
 import { PageTitle } from '~components/index';
 import { useThemeContext } from '~context/ThemeProvider';
 import useLanguage from '~hooks/useLanguage';
@@ -35,15 +35,22 @@ const LoginPage = () => {
                 <Form<LoginBody>
                     layout='vertical'
                     onFinish={values => login(values)}
-                    autoComplete='off'
+                    autoComplete='on'
                     requiredMark={false}
                 >
                     <Form.Item
-                        name='username'
+                        name='email'
                         label={t('username')}
-                        rules={[{ required: true, message: t('required') }]}
+                        rules={[
+                            { required: true, message: t('required') },
+                            { type: 'email', message: t('username') },
+                        ]}
                     >
-                        <Input prefix={<User size={16} color='var(--text-subtle)' />} size='large' />
+                        <Input
+                            prefix={<Mail size={16} color='var(--text-subtle)' />}
+                            size='large'
+                            autoComplete='username'
+                        />
                     </Form.Item>
 
                     <Form.Item
@@ -54,6 +61,7 @@ const LoginPage = () => {
                         <Input.Password
                             prefix={<Lock size={16} color='var(--text-subtle)' />}
                             size='large'
+                            autoComplete='current-password'
                         />
                     </Form.Item>
 

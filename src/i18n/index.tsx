@@ -95,6 +95,17 @@ export const translateData: ITranslateData = {
     campaign_name: { uz: 'Kampaniya nomi', ru: 'Название кампании', en: 'Campaign name' },
     duration: { uz: 'Davomiyligi', ru: 'Длительность', en: 'Duration' },
     audience: { uz: 'Auditoriya (footfall)', ru: 'Аудитория (footfall)', en: 'Audience (footfall)' },
+    kpi_pending_approval_foot: {
+        uz: 'tasdiq kutmoqda',
+        ru: 'ожидают подтверждения',
+        en: 'awaiting approval',
+    },
+    invoices_count: { uz: 'hisob-faktura', ru: 'счетов', en: 'invoices' },
+    unique_scans: {
+        uz: 'Noyob skanerlashlar',
+        ru: 'Уникальные сканирования',
+        en: 'Unique scans',
+    },
 
     // ===== Statuslar =====
     status_active: { uz: 'Faol', ru: 'Активна', en: 'Active' },
@@ -156,13 +167,69 @@ export const translateData: ITranslateData = {
         ru: 'Войдите в аккаунт, чтобы управлять кампаниями',
         en: 'Sign in to manage your campaigns',
     },
-    username: { uz: 'Login', ru: 'Логин', en: 'Username' },
+    username: { uz: 'Email', ru: 'Email', en: 'Email' },
     password: { uz: 'Parol', ru: 'Пароль', en: 'Password' },
+    accept_invite_title: {
+        uz: 'Hisobni faollashtirish',
+        ru: 'Активация аккаунта',
+        en: 'Activate your account',
+    },
+    accept_invite_subtitle: {
+        uz: "Portalga kirish uchun o'z parolingizni qo'ying",
+        ru: 'Задайте свой пароль для входа в портал',
+        en: 'Set your own password to sign in to the portal',
+    },
+    accept_invite_submit: {
+        uz: 'Faollashtirish va kirish',
+        ru: 'Активировать и войти',
+        en: 'Activate and sign in',
+    },
+    accept_invite_hint: {
+        uz: "Havola bir marta ishlaydi. Muddati o'tgan bo'lsa BTS menejeridan yangisini so'rang.",
+        ru: 'Ссылка одноразовая. Если срок истёк, запросите новую у менеджера BTS.',
+        en: 'The link works once. If it has expired, ask your BTS manager for a new one.',
+    },
+    invite_token_missing: {
+        uz: "Havola to'liq emas — token topilmadi. BTS menejeridan havolani qayta so'rang.",
+        ru: 'Ссылка неполная — токен не найден. Запросите ссылку у менеджера BTS.',
+        en: 'The link is incomplete — no token found. Ask your BTS manager to resend it.',
+    },
+    invite_accepted: {
+        uz: 'Hisob faollashtirildi',
+        ru: 'Аккаунт активирован',
+        en: 'Account activated',
+    },
+    invite_error: {
+        uz: "Havola yaroqsiz yoki muddati o'tgan",
+        ru: 'Ссылка недействительна или истекла',
+        en: 'The link is invalid or has expired',
+    },
+    new_password: { uz: 'Yangi parol', ru: 'Новый пароль', en: 'New password' },
+    confirm_password: {
+        uz: 'Parolni takrorlang',
+        ru: 'Повторите пароль',
+        en: 'Confirm password',
+    },
+    password_too_short: {
+        uz: "Parol kamida 12 belgidan iborat bo'lishi kerak",
+        ru: 'Пароль должен содержать не менее 12 символов',
+        en: 'Password must be at least 12 characters',
+    },
+    password_too_weak: {
+        uz: 'Kichik harf, katta harf va raqam bo\'lishi shart',
+        ru: 'Нужны строчная, заглавная буква и цифра',
+        en: 'Must include a lowercase letter, an uppercase letter and a digit',
+    },
+    password_mismatch: {
+        uz: 'Parollar mos kelmadi',
+        ru: 'Пароли не совпадают',
+        en: 'Passwords do not match',
+    },
     login_success: { uz: 'Xush kelibsiz!', ru: 'Добро пожаловать!', en: 'Welcome!' },
     login_error: {
         uz: "Login yoki parol noto'g'ri",
         ru: 'Неверный логин или пароль',
-        en: 'Invalid username or password',
+        en: 'Invalid email or password',
     },
     login_demo_hint: {
         uz: 'Demo rejim: istalgan login va parol bilan kiring',
@@ -228,14 +295,9 @@ export const translateData: ITranslateData = {
         en: 'Campaign resumed',
     },
     campaign_created: {
-        uz: 'Kampaniya ishga tushirildi',
-        ru: 'Кампания запущена',
-        en: 'Campaign launched',
-    },
-    campaign_draft_saved: {
-        uz: 'Qoralama saqlandi',
-        ru: 'Черновик сохранён',
-        en: 'Draft saved',
+        uz: 'Kampaniya tasdiqqa yuborildi',
+        ru: 'Кампания отправлена на подтверждение',
+        en: 'Campaign submitted for approval',
     },
 
     // ===== Sehrgar (yangi kampaniya) =====
@@ -271,16 +333,28 @@ export const translateData: ITranslateData = {
         en: 'PNG or JPG · 1:1 for parcel label, 16:9 for screen',
     },
     creative_name_field: { uz: 'Kreativ nomi', ru: 'Название креатива', en: 'Creative name' },
+    creative_rejected_note: {
+        uz: "Kreativ rad etildi — yangi fayl yuklab, qayta yuboring",
+        ru: 'Креатив отклонён — загрузите новый файл',
+        en: 'Creative rejected — upload a new file',
+    },
     creative_preview_label: {
         uz: 'Eskizdagi matn',
         ru: 'Текст на эскизе',
         en: 'Thumbnail text',
     },
     creative_required: {
-        uz: 'Davom etish uchun kreativ tanlang',
-        ru: 'Выберите креатив, чтобы продолжить',
-        en: 'Select a creative to continue',
+        uz: 'Davom etish uchun kreativ yuklang',
+        ru: 'Загрузите креатив, чтобы продолжить',
+        en: 'Upload a creative to continue',
     },
+    campaign_name_required: {
+        uz: 'Kampaniya nomini kiriting',
+        ru: 'Введите название кампании',
+        en: 'Enter a campaign name',
+    },
+    uploading: { uz: 'Yuklanmoqda…', ru: 'Загрузка…', en: 'Uploading…' },
+    remove: { uz: "O'chirish", ru: 'Удалить', en: 'Remove' },
     creative_selected: { uz: 'Tanlandi', ru: 'Выбран', en: 'Selected' },
     creative_moderation_note: {
         uz: 'Yangi kreativ moderatsiyadan o\'tadi — odatda 24 soat ichida',
@@ -347,7 +421,6 @@ export const translateData: ITranslateData = {
         ru: 'Перейти к проверке',
         en: 'Go to review',
     },
-    save_draft: { uz: 'Qoralamani saqlash', ru: 'Сохранить черновик', en: 'Save draft' },
 
     // 3-qadam
     review_title: {
@@ -366,9 +439,9 @@ export const translateData: ITranslateData = {
         en: 'Campaign is ready to launch',
     },
     review_ready_desc: {
-        uz: "Hammasi tekshirildi. Tasdiqlangandan so'ng yetkazib berish 24 soat ichida boshlanadi.",
-        ru: 'Всё проверено. После подтверждения доставка начнётся в течение 24 часов.',
-        en: 'All checks passed. Delivery starts within 24 hours of approval.',
+        uz: "Kampaniya BTS tasdig'iga yuboriladi. Kreativ ham moderatsiyadan o'tadi — tasdiqlangandan so'ng yetkazib berish boshlanadi.",
+        ru: 'Кампания уйдёт на подтверждение BTS. Креатив тоже пройдёт модерацию — доставка начнётся после подтверждения.',
+        en: 'The campaign goes to BTS for approval. The creative is moderated too — delivery starts once both are approved.',
     },
     final_summary: { uz: 'Yakuniy xulosa', ru: 'Итоговая сводка', en: 'Final summary' },
     launch_campaign: {
@@ -431,7 +504,11 @@ export const translateData: ITranslateData = {
         en: 'Delivered impressions',
     },
     funnel_scans: { uz: 'QR skanerlash', ru: 'QR-сканирования', en: 'QR scans' },
-    funnel_clicks: { uz: 'Saytga o\'tish', ru: 'Переходы на сайт', en: 'Site visits' },
+    funnel_unique_scans: {
+        uz: 'Noyob skanerlashlar',
+        ru: 'Уникальные сканирования',
+        en: 'Unique scans',
+    },
     channel_perf_title: {
         uz: 'Kanal samaradorligi',
         ru: 'Эффективность каналов',

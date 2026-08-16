@@ -1,16 +1,15 @@
+import { LoginResponse } from '~api/types';
+
 export type LoginBody = {
-    username: string;
+    email: string;
     password: string;
 };
 
-export type LoginResponseType = {
-    accessToken: string;
-    refreshToken: string;
-    role?: string;
-    advertiser?: {
-        id: string;
-        name: string;
-        /** PRODUCT-SPEC §3.2: prepaid (balans) yoki postpaid (hisob-faktura) */
-        billingType: 'prepaid' | 'postpaid';
-    };
+/** `{ accessToken, refreshToken, role, advertiser }` */
+export type LoginResponseType = LoginResponse;
+
+/** Taklif havolasidagi token + mijoz o'zi tanlagan parol. */
+export type AcceptInviteBody = {
+    token: string;
+    password: string;
 };

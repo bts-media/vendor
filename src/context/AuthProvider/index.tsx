@@ -9,7 +9,10 @@ import {
     useMemo,
     useState,
 } from 'react';
+import { Api } from '~api/axios';
 import { ensureValidAccessToken } from '~api/tokenManager';
+import { AdvertiserAccount, AdvertiserProfile } from '~api/types';
+import { urls } from '~constants/urls';
 import { clearLocalStorage, getLocalstorage, setLocalstorage } from '~utils/helpers';
 import { BillingType, IAuthContextData, LoginPayload } from './types';
 
@@ -17,30 +20,48 @@ export const AuthContext = createContext({} as IAuthContextData);
 
 export const useAuthContext = () => useContext(AuthContext);
 
+const billingOf = (advertiser: AdvertiserAccount | null): BillingType =>
+    advertiser?.billingMode?.name === 'PREPAID' ? 'prepaid' : 'postpaid';
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [token, setToken] = useState<string | null>(() => getLocalstorage('accessToken'));
     const [role, setRole] = useState<string | null>(() => getLocalstorage('role'));
-    const [advertiserName, setAdvertiserName] = useState<string | null>(() =>
-        getLocalstorage('advertiserName'),
-    );
-    const [billingType, setBillingType] = useState<BillingType>(
-        () => (getLocalstorage('billingType') as BillingType) || 'postpaid',
-    );
+    const [advertiser, setAdvertiser] = useState<AdvertiserAccount | null>(null);
     const [isChecking, setIsChecking] = useState(true);
 
+    /**
+     * Mount'da token bor bo'lsa profil o'qiladi: hisob nomi, billing turi va balans
+     * shundan keladi. Token yaroqsiz bo'lsa sessiya yopiladi.
+     */
     useEffect(() => {
         let cancelled = false;
 
         (async () => {
             const valid = await ensureValidAccessToken();
             if (cancelled) return;
+
             if (!valid) {
                 clearLocalStorage();
+                setToken(null);
                 setRole(null);
-                setAdvertiserName(null);
+                setIsChecking(false);
+                return;
             }
-            setToken(valid);
-            setIsChecking(false);
+
+            try {
+                const profile = (await Api.get(urls.auth.me)) as unknown as AdvertiserProfile;
+                if (cancelled) return;
+                setAdvertiser(profile.advertiser);
+                setRole(profile.role);
+                setToken(valid);
+            } catch {
+                if (!cancelled) {
+                    clearLocalStorage();
+                    setToken(null);
+                }
+            } finally {
+                if (!cancelled) setIsChecking(false);
+            }
         })();
 
         return () => {
@@ -52,19 +73,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setLocalstorage('accessToken', payload.accessToken);
         setLocalstorage('refreshToken', payload.refreshToken);
         if (payload.role) setLocalstorage('role', payload.role);
-        if (payload.advertiserName) setLocalstorage('advertiserName', payload.advertiserName);
-        if (payload.billingType) setLocalstorage('billingType', payload.billingType);
+        if (payload.advertiser) setLocalstorage('advertiserName', payload.advertiser.name);
         setToken(payload.accessToken);
         setRole(payload.role ?? null);
-        setAdvertiserName(payload.advertiserName ?? null);
-        setBillingType(payload.billingType ?? 'postpaid');
+        setAdvertiser(payload.advertiser ?? null);
     }, []);
 
     const logout = useCallback(() => {
+        // Serverdagi refresh tokenlarni ham bekor qilamiz; javobni kutmaymiz
+        void Api.post(urls.auth.logout).catch(() => undefined);
         clearLocalStorage();
         setToken(null);
         setRole(null);
-        setAdvertiserName(null);
+        setAdvertiser(null);
     }, []);
 
     const value = useMemo<IAuthContextData>(
@@ -72,12 +93,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             isAuthenticated: Boolean(token),
             isChecking,
             role,
-            advertiserName,
-            billingType,
+            advertiser,
+            advertiserName: advertiser?.name ?? getLocalstorage('advertiserName'),
+            billingType: billingOf(advertiser),
             login,
             logout,
         }),
-        [token, isChecking, role, advertiserName, billingType, login, logout],
+        [token, isChecking, role, advertiser, login, logout],
     );
 
     if (isChecking) {

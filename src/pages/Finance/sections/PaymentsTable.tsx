@@ -27,7 +27,7 @@ const PaymentsTable = ({ payments, isLoading }: PaymentsTableProps) => {
                     <div className={styles.cellSub}>
                         {record.invoiceNumber
                             ? `${record.invoiceNumber} ${t('payment_for_invoice')}`
-                            : t(record.subtitleKey ?? 'payment_top_up')}
+                            : t('payment_top_up')}
                     </div>
                 </div>
             ),

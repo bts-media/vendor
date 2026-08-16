@@ -29,12 +29,23 @@ const BalanceCards = ({ finance, onTopUp }: BalanceCardsProps) => {
                 </div>
 
                 <div className={`${styles.balanceFoot} tnum`}>
-                    {t('daily_burn')} ~{formatSum(finance.dailyBurn)} · {t('est_depletion')} ~
-                    {finance.estimatedDays} {t('days_short')}
+                    {t('daily_burn')} ~{formatSum(finance.dailyBurn)}
+                    {finance.estimatedDays !== null &&
+                        ` · ${t('est_depletion')} ~${finance.estimatedDays} ${t('days_short')}`}
                 </div>
 
+                {/* Chiziq balansning past chegaraga nisbatini ko'rsatadi */}
                 <div className={styles.bar}>
-                    <MiniBar value={finance.balanceShare} tone='teal' width='100%' thick />
+                    <MiniBar
+                        value={
+                            finance.lowThreshold > 0
+                                ? Math.min(100, (finance.balance / (finance.lowThreshold * 4)) * 100)
+                                : 100
+                        }
+                        tone={finance.balance <= finance.lowThreshold ? 'danger' : 'teal'}
+                        width='100%'
+                        thick
+                    />
                 </div>
 
                 <Button
