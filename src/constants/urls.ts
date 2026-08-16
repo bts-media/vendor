@@ -21,6 +21,7 @@ export const urls = {
         refresh: '/advertiser/auth/refresh',
         logout: '/advertiser/auth/logout',
         me: '/advertiser/auth/me',
+        acceptInvite: '/advertiser/auth/accept-invite',
     },
     dashboard: {
         stats: '/advertiser/dashboard/stats',

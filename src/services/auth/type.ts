@@ -7,3 +7,9 @@ export type LoginBody = {
 
 /** `{ accessToken, refreshToken, role, advertiser }` */
 export type LoginResponseType = LoginResponse;
+
+/** Taklif havolasidagi token + mijoz o'zi tanlagan parol. */
+export type AcceptInviteBody = {
+    token: string;
+    password: string;
+};

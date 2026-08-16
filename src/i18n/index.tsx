@@ -169,6 +169,62 @@ export const translateData: ITranslateData = {
     },
     username: { uz: 'Email', ru: 'Email', en: 'Email' },
     password: { uz: 'Parol', ru: 'Пароль', en: 'Password' },
+    accept_invite_title: {
+        uz: 'Hisobni faollashtirish',
+        ru: 'Активация аккаунта',
+        en: 'Activate your account',
+    },
+    accept_invite_subtitle: {
+        uz: "Portalga kirish uchun o'z parolingizni qo'ying",
+        ru: 'Задайте свой пароль для входа в портал',
+        en: 'Set your own password to sign in to the portal',
+    },
+    accept_invite_submit: {
+        uz: 'Faollashtirish va kirish',
+        ru: 'Активировать и войти',
+        en: 'Activate and sign in',
+    },
+    accept_invite_hint: {
+        uz: "Havola bir marta ishlaydi. Muddati o'tgan bo'lsa BTS menejeridan yangisini so'rang.",
+        ru: 'Ссылка одноразовая. Если срок истёк, запросите новую у менеджера BTS.',
+        en: 'The link works once. If it has expired, ask your BTS manager for a new one.',
+    },
+    invite_token_missing: {
+        uz: "Havola to'liq emas — token topilmadi. BTS menejeridan havolani qayta so'rang.",
+        ru: 'Ссылка неполная — токен не найден. Запросите ссылку у менеджера BTS.',
+        en: 'The link is incomplete — no token found. Ask your BTS manager to resend it.',
+    },
+    invite_accepted: {
+        uz: 'Hisob faollashtirildi',
+        ru: 'Аккаунт активирован',
+        en: 'Account activated',
+    },
+    invite_error: {
+        uz: "Havola yaroqsiz yoki muddati o'tgan",
+        ru: 'Ссылка недействительна или истекла',
+        en: 'The link is invalid or has expired',
+    },
+    new_password: { uz: 'Yangi parol', ru: 'Новый пароль', en: 'New password' },
+    confirm_password: {
+        uz: 'Parolni takrorlang',
+        ru: 'Повторите пароль',
+        en: 'Confirm password',
+    },
+    password_too_short: {
+        uz: "Parol kamida 12 belgidan iborat bo'lishi kerak",
+        ru: 'Пароль должен содержать не менее 12 символов',
+        en: 'Password must be at least 12 characters',
+    },
+    password_too_weak: {
+        uz: 'Kichik harf, katta harf va raqam bo\'lishi shart',
+        ru: 'Нужны строчная, заглавная буква и цифра',
+        en: 'Must include a lowercase letter, an uppercase letter and a digit',
+    },
+    password_mismatch: {
+        uz: 'Parollar mos kelmadi',
+        ru: 'Пароли не совпадают',
+        en: 'Passwords do not match',
+    },
     login_success: { uz: 'Xush kelibsiz!', ru: 'Добро пожаловать!', en: 'Welcome!' },
     login_error: {
         uz: "Login yoki parol noto'g'ri",
