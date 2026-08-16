@@ -1,0 +1,22 @@
+# Netlify build sozlamalari.
+#
+# Bu fayl UI'dagi sozlamadan USTUN turadi va aynan shuning uchun bor: UI'da
+# `yarn run build` yozilgan edi, repoda esa faqat `package-lock.json` bor.
+# Yarn lockfile'ni o'qimay, `^` diapazonlaridan ENG YANGI versiyalarni o'rnatadi —
+# shu tarzda axios 1.18.1 o'rniga 1.19.0 tushib, build TypeScript xatosi bilan yiqildi.
+# `npm ci` esa faqat lockfile'dagi versiyalarni o'rnatadi: lokal va CI bir xil bo'ladi.
+
+[build]
+  command = "npm ci && npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# SPA: barcha yo'llarni index.html ga yo'naltirish.
+# Busiz to'g'ridan-to'g'ri ochilgan manzil (masalan taklif havolasi
+# /accept-invite?token=...) 404 qaytaradi — server bunday faylni topmaydi.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
