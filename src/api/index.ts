@@ -1,6 +1,6 @@
 import { AxiosError, AxiosRequestConfig } from 'axios';
 import { useMutation, useQuery } from 'react-query';
-import { Api } from './axios';
+import { request } from './axios';
 
 interface IEditData<T> {
     url: string;
@@ -43,7 +43,7 @@ const useApiQuery = <T>(
 ) =>
     useQuery<T>(
         [...key, cleanParams(params) ?? null],
-        async () => (await Api.get<T>(url, { params: cleanParams(params) })) as unknown as T,
+        async () => await request.get<T>(url, { params: cleanParams(params) }),
         options,
     );
 
@@ -55,7 +55,7 @@ const useGetList = <T>(key: string | string[], url: string, options?: QueryOptio
     const get = async () => {
         if (!url) return null;
         const urlQuery = Array.isArray(key) ? url + (key[1] ?? '') : url;
-        const data: T = await Api.get(urlQuery);
+        const data = await request.get<T>(urlQuery);
         return data;
     };
     // Kalit tipini aniq beramiz — aks holda react-query `QueryKey` bilan mos kelmaydi
@@ -66,24 +66,24 @@ const useCustomGetQuery = <T>(
     key: string | string[],
     url: string,
     options?: QueryOptions & AxiosRequestConfig,
-) => useQuery(key, async () => (await Api.get<T>(url, options)) as T, options);
+) => useQuery(key, async () => await request.get<T>(url, options), options);
 
 const useCreate = <T, U, V = Error>(url: string) =>
-    useMutation<U, AxiosError<V>, T>(async body => await Api.post(url, body));
+    useMutation<U, AxiosError<V>, T>(async body => await request.post<U>(url, body));
 
 const useUpdate = <T, U>() =>
-    useMutation(async ({ url, item }: IEditData<T>) => (await Api.patch(url, item)) as U);
+    useMutation(async ({ url, item }: IEditData<T>) => await request.patch<U>(url, item));
 
 const useUpdatePut = <T, U>() =>
-    useMutation(async ({ url, item }: IEditData<T>) => (await Api.put(url, item)) as U);
+    useMutation(async ({ url, item }: IEditData<T>) => await request.put<U>(url, item));
 
 const useDeleteApi = <T>(url: string) =>
-    useMutation(async (id: number | string) => (await Api.delete(`${url}/${id}`)) as T);
+    useMutation(async (id: number | string) => await request.delete<T>(`${url}/${id}`));
 
 const useCreateMedia = <T, U, V = Error>(url: string) =>
     useMutation<U, AxiosError<V>, T>(
         async body =>
-            await Api.post(url, body, {
+            await request.post<U>(url, body, {
                 headers: { 'Content-Type': 'multipart/form-data' },
             }),
     );
