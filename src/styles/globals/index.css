@@ -3,3 +3,5 @@
 @import './base.css';
 @import './utilities.css';
 @import './antd-overrides.css';
+/* Oxirgi — mobil qoidalar yuqoridagilarni bekor qila olishi kerak */
+@import './responsive.css';

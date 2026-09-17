@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Card, SectionTitle, SelectableCard } from '~components/index';
 import { PAYMENT_METHODS } from '~constants/data';
 import useLanguage from '~hooks/useLanguage';
+import useWindowSize from '~hooks/useWindowSize';
 import { PaymentMethodKey } from '~services/finance/type';
 import styles from '../Finance.module.css';
 
@@ -15,6 +16,7 @@ const DEFAULT_AMOUNT = 10_000_000;
 
 const TopUpCard = ({ isLoading, onSubmit }: TopUpCardProps) => {
     const { t } = useLanguage();
+    const { isMobile } = useWindowSize();
     const [method, setMethod] = useState<PaymentMethodKey>('payme');
     const [amount, setAmount] = useState<number>(DEFAULT_AMOUNT);
 
@@ -44,7 +46,7 @@ const TopUpCard = ({ isLoading, onSubmit }: TopUpCardProps) => {
                         onChange={value => setAmount(value ?? 0)}
                         min={100_000}
                         step={1_000_000}
-                        style={{ width: 220 }}
+                        style={{ width: isMobile ? '100%' : 220 }}
                         // Kirituvchi maydonda ham probelli format (PRODUCT-SPEC §1)
                         formatter={value => String(value ?? '').replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
                         parser={value => Number(String(value ?? '').replace(/\s/g, '')) || 0}
