@@ -1,6 +1,6 @@
 import { Button } from 'antd';
 import { ArrowLeft, Check, Zap } from 'lucide-react';
-import { Card } from '~components/index';
+import { Card, EstimateBreakdown } from '~components/index';
 import useLanguage from '~hooks/useLanguage';
 import { formatCompactSum, formatNumber } from '~utils/helpers';
 import styles from '../CampaignBuilder.module.css';
@@ -19,7 +19,8 @@ const ReviewStep = ({
     regionLabels,
     goal,
     days,
-    estimatedCost,
+    packageLabel,
+    lines,
     onBack,
     onLaunch,
     isLaunching,
@@ -33,7 +34,8 @@ const ReviewStep = ({
         { key: t('regions'), value: regionLabels || '—' },
         { key: t('impression_goal'), value: formatNumber(goal) },
         { key: t('duration'), value: `${days} ${t('days_short')}` },
-        { key: t('est_total'), value: formatCompactSum(estimatedCost, true) },
+        { key: t('package'), value: packageLabel ?? t('package_none') },
+        { key: t('est_total'), value: formatCompactSum(lines?.total ?? 0, true) },
     ];
 
     return (
@@ -59,6 +61,10 @@ const ReviewStep = ({
                         <span className={`${styles.sumValue} tnum`}>{row.value}</span>
                     </div>
                 ))}
+            </Card>
+
+            <Card title={t('step_placements')} padded style={{ marginTop: 18 }}>
+                <EstimateBreakdown estimate={lines} />
             </Card>
 
             <div className={styles.reviewActions}>

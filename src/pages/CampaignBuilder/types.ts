@@ -1,4 +1,4 @@
-import { ChannelKey } from '~services/campaigns/type';
+import { ChannelKey, PlacementInput } from '~services/campaigns/type';
 import { UploadedCreative } from '~services/creatives/type';
 
 /** Sehrgar bo'ylab tashiladigan holat */
@@ -11,6 +11,14 @@ export type WizardState = {
     regions: string[];
     goal: number;
     days: number;
+    /** Buyurtma qatorlari — kanal/maqsad o'zgarganda `normalizePlacements` tekislaydi */
+    placements: PlacementInput[];
+    packageTierId?: number;
 };
 
-export const WIZARD_STEPS = ['step_creative', 'step_targeting', 'step_review'] as const;
+export const WIZARD_STEPS = [
+    'step_creative',
+    'step_targeting',
+    'step_placements',
+    'step_review',
+] as const;

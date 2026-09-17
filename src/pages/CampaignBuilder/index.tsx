@@ -3,26 +3,36 @@ import { useNavigate } from 'react-router-dom';
 import { PageHeader, PageTitle } from '~components/index';
 import { useNotify } from '~components/NotificationProvider';
 import { DEFAULT_CAMPAIGN_DAYS } from '~constants/data';
+import { PackageTier } from '~constants/enums';
 import { useHeaderSlot } from '~context/HeaderSlotProvider';
+import useDebounce from '~hooks/useDebounce';
 import useLanguage from '~hooks/useLanguage';
-import { useCreateCampaign, useEstimate } from '~services/campaigns';
-import { blendedCpm, estimateScans, useInventory } from '~services/inventory';
+import { channelIdOf, useCreateCampaign, useEstimate } from '~services/campaigns';
+import { normalizePlacements } from '~services/campaigns/placements';
+import { estimateScans, useInventory } from '~services/inventory';
 import styles from './CampaignBuilder.module.css';
 import CampaignSummary from './sections/CampaignSummary';
 import CreativeStep from './sections/CreativeStep';
+import PlacementsStep from './sections/PlacementsStep';
 import ReviewStep from './sections/ReviewStep';
 import TargetingStep from './sections/TargetingStep';
 import WizardSteps from './sections/WizardSteps';
 import { WizardState } from './types';
 
+const INITIAL_CHANNELS: WizardState['channels'] = ['parcel', 'screen'];
+const INITIAL_GOAL = 1_000_000;
+
 /** Boshlang'ich qiymatlar mockupdagi holatga mos (posilka + ekran, Toshkent + Samarqand) */
 const INITIAL_STATE: WizardState = {
     name: '',
-    channels: ['parcel', 'screen'],
+    channels: INITIAL_CHANNELS,
     regions: ['tashkent', 'samarkand'],
-    goal: 1_000_000,
+    goal: INITIAL_GOAL,
     days: DEFAULT_CAMPAIGN_DAYS,
+    placements: normalizePlacements(channelIdOf(INITIAL_CHANNELS), [], INITIAL_GOAL),
 };
+
+const REVIEW_STEP = 3;
 
 const CampaignBuilderPage = () => {
     const { t } = useLanguage();
@@ -36,15 +46,32 @@ const CampaignBuilderPage = () => {
 
     const { channels, regions, pricing, isLoading: isInventoryLoading } = useInventory();
     const { createCampaign, isCreating } = useCreateCampaign();
-    const { estimate, cost, isEstimating } = useEstimate();
+    const { estimate, lines, isEstimating } = useEstimate();
 
+    /**
+     * Kanal yoki maqsad o'zgarsa qatorlar backend qoidasiga tekislanadi (majburiy stiker /
+     * televizor, posilka soni = maqsad); televizorsiz kanalga o'tsa televizorli paket ketadi.
+     */
     const handleChange = (patch: Partial<WizardState>) =>
-        setState(prev => ({ ...prev, ...patch }));
+        setState(prev => {
+            const next = { ...prev, ...patch };
+            if (patch.channels || patch.goal !== undefined || patch.placements) {
+                const channelId = channelIdOf(next.channels);
+                next.placements = normalizePlacements(channelId, next.placements, next.goal);
+                if (
+                    next.packageTierId !== undefined &&
+                    next.packageTierId !== PackageTier.ECONOM &&
+                    !next.channels.includes('screen')
+                ) {
+                    next.packageTierId = undefined;
+                }
+            }
+            return next;
+        });
 
     const creative = state.creative;
 
     const summary = useMemo(() => {
-        const cpm = blendedCpm(state.channels, channels);
         return {
             creative,
             campaignName: state.name,
@@ -56,13 +83,26 @@ const CampaignBuilderPage = () => {
             goal: state.goal,
             days: state.days,
             estimatedScans: estimateScans(state.goal, pricing.expectedScanRate),
-            // Narxni backend narx kartasi bo'yicha hisoblaydi — klient taxmin qilmaydi
-            estimatedCost: cost,
-            cpm,
+            // Narxni backend narxlar jadvali bo'yicha hisoblaydi — klient taxmin qilmaydi
+            estimatedCost: lines?.total ?? 0,
+            packageLabel: state.packageTierId
+                ? t(`package_${PackageTier[state.packageTierId]}`)
+                : null,
+            lines,
         };
-    }, [state, channels, regions, pricing, creative, cost, t]);
+    }, [state, regions, creative, pricing, lines, t]);
 
-    /** Maqsad, kanal yoki hudud o'zgarganda narx qayta so'raladi. */
+    /** Maqsad, kanal, hudud, qator yoki paket o'zgarganda narx qayta so'raladi (debounce). */
+    const estimateKey = useDebounce(
+        JSON.stringify([
+            state.channels,
+            state.regions,
+            state.goal,
+            state.days,
+            state.placements,
+            state.packageTierId,
+        ]),
+    );
     useEffect(() => {
         void estimate({
             name: state.name,
@@ -70,9 +110,11 @@ const CampaignBuilderPage = () => {
             regions: state.regions,
             goal: state.goal,
             days: state.days,
+            placements: state.placements,
+            packageTierId: state.packageTierId,
         });
         // eslint-disable-next-line react-hooks/exhaustive-deps -- estimate har renderda yangi
-    }, [state.channels, state.regions, state.goal, state.days]);
+    }, [estimateKey]);
 
     /** Qadam almashtirishdan oldin joriy qadam to'ldirilganini tekshiramiz */
     const validate = (from: number): boolean => {
@@ -90,6 +132,10 @@ const CampaignBuilderPage = () => {
         }
         if (from === 1 && !state.regions.length) {
             notify.warning({ type: 'warning', message: t('regions_required') });
+            return false;
+        }
+        if (from === 2 && !state.placements.length) {
+            notify.warning({ type: 'warning', message: t('placements_required') });
             return false;
         }
         return true;
@@ -115,6 +161,8 @@ const CampaignBuilderPage = () => {
         regions: state.regions,
         goal: state.goal,
         days: state.days,
+        placements: state.placements,
+        packageTierId: state.packageTierId,
         // Kampaniya yaratilgandan keyin shu tiket bilan kreativ biriktiriladi
         creative: state.creative
             ? {
@@ -127,7 +175,7 @@ const CampaignBuilderPage = () => {
 
     const handleLaunch = () => createCampaign(body, () => navigate('/campaigns'));
 
-    const isReview = step === 2;
+    const isReview = step === REVIEW_STEP;
 
     return (
         <div>
@@ -141,16 +189,15 @@ const CampaignBuilderPage = () => {
             {isReview ? (
                 <ReviewStep
                     {...summary}
-                    onBack={() => goToStep(1)}
+                    onBack={() => goToStep(REVIEW_STEP - 1)}
                     onLaunch={handleLaunch}
                     isLaunching={isCreating}
                 />
             ) : (
                 <div className={styles.builder}>
                     <div className={styles.column}>
-                        {step === 0 ? (
-                            <CreativeStep state={state} onChange={handleChange} />
-                        ) : (
+                        {step === 0 && <CreativeStep state={state} onChange={handleChange} />}
+                        {step === 1 && (
                             <TargetingStep
                                 channels={channels}
                                 regions={regions}
@@ -160,12 +207,20 @@ const CampaignBuilderPage = () => {
                                 onChange={handleChange}
                             />
                         )}
+                        {step === 2 && (
+                            <PlacementsStep
+                                state={state}
+                                estimate={lines}
+                                isEstimating={isEstimating}
+                                onChange={handleChange}
+                            />
+                        )}
                     </div>
 
                     <CampaignSummary
                         {...summary}
                         isEstimating={isEstimating}
-                        nextLabel={step === 1 ? t('go_to_review') : t('next')}
+                        nextLabel={step === REVIEW_STEP - 1 ? t('go_to_review') : t('next')}
                         onNext={() => goToStep(step + 1)}
                     />
                 </div>
