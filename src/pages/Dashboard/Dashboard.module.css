@@ -39,6 +39,12 @@
 
 @media (width < 980px) {
     .kpiGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (width < 640px) {
+    .kpiGrid {
         grid-template-columns: 1fr;
     }
 }

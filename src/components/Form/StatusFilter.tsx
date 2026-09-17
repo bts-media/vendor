@@ -1,6 +1,7 @@
 import { Select } from 'antd';
 import { useSearchParams } from 'react-router-dom';
 import useLanguage from '~hooks/useLanguage';
+import useWindowSize from '~hooks/useWindowSize';
 import { Option } from '~types/index';
 
 interface StatusFilterProps {
@@ -13,6 +14,7 @@ interface StatusFilterProps {
 /** Holat filtri — qiymat URL'da saqlanadi, shuning uchun sahifa yangilansa ham qoladi. */
 const StatusFilter = ({ options, paramKey = 'status', width = 170 }: StatusFilterProps) => {
     const { t } = useLanguage();
+    const { isMobile } = useWindowSize();
     const [searchParams, setSearchParams] = useSearchParams();
 
     const handleChange = (value?: string) => {
@@ -28,7 +30,7 @@ const StatusFilter = ({ options, paramKey = 'status', width = 170 }: StatusFilte
     return (
         <Select
             allowClear
-            style={{ width }}
+            style={{ width: isMobile ? '100%' : width }}
             value={searchParams.get(paramKey) ?? undefined}
             onChange={handleChange}
             placeholder={t('status')}

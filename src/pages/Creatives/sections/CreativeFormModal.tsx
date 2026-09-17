@@ -2,6 +2,7 @@ import { Button, Flex, Form, Input, Modal, Segmented, Select, Upload } from 'ant
 import { UploadCloud } from 'lucide-react';
 import { useEffect } from 'react';
 import useLanguage from '~hooks/useLanguage';
+import useWindowSize from '~hooks/useWindowSize';
 import { useCampaigns } from '~services/campaigns';
 import { CreateCreativeBody } from '~services/creatives/type';
 
@@ -15,6 +16,7 @@ interface CreativeFormModalProps {
 const CreativeFormModal = ({ open, loading, onCancel, onSubmit }: CreativeFormModalProps) => {
     const [form] = Form.useForm<CreateCreativeBody>();
     const { t } = useLanguage();
+    const { isMobile } = useWindowSize();
     // Kreativ doim kampaniyaga biriktiriladi — backend `campaignId` ni talab qiladi
     const { allCampaigns, isLoading: isCampaignsLoading } = useCampaigns();
 
@@ -100,9 +102,16 @@ const CreativeFormModal = ({ open, loading, onCancel, onSubmit }: CreativeFormMo
                     {t('creative_moderation_note')}
                 </p>
 
-                <Flex gap={8} justify='end'>
-                    <Button onClick={handleCancel}>{t('cancel')}</Button>
-                    <Button type='primary' htmlType='submit' loading={loading}>
+                {/* Mobil ekranda tugmalar ustma-ust: asosiysi tepada (column-reverse) */}
+                <Flex
+                    gap={8}
+                    justify='end'
+                    style={isMobile ? { flexDirection: 'column-reverse' } : undefined}
+                >
+                    <Button block={isMobile} onClick={handleCancel}>
+                        {t('cancel')}
+                    </Button>
+                    <Button block={isMobile} type='primary' htmlType='submit' loading={loading}>
                         {t('add')}
                     </Button>
                 </Flex>

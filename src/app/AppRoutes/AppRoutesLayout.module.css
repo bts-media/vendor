@@ -1,6 +1,7 @@
 .app {
     display: flex;
     min-height: 100vh;
+    min-height: 100dvh;
 }
 
 /* ---------- Sidebar ---------- */
@@ -177,5 +178,27 @@
 
     .content {
         padding: var(--space-4);
+    }
+}
+
+@media (width < 640px) {
+    /* Sahifa nomi darhol PageHeader'da takrorlanadi — nonni olib, joyni
+       topbar'dagi sehrgar qadamlariga beramiz */
+    .crumb {
+        display: none;
+    }
+
+    .headerSlot {
+        min-width: 0;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    .headerSlot::-webkit-scrollbar {
+        display: none;
+    }
+
+    .content {
+        padding: var(--space-3);
     }
 }
