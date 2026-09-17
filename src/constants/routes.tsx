@@ -5,6 +5,7 @@ import { lazy, ReactNode, Suspense } from 'react';
 const DashboardPage = lazy(() => import('~pages/Dashboard'));
 const CampaignsPage = lazy(() => import('~pages/Campaigns'));
 const CampaignBuilderPage = lazy(() => import('~pages/CampaignBuilder'));
+const CampaignDetailPage = lazy(() => import('~pages/CampaignDetail'));
 const CreativesPage = lazy(() => import('~pages/Creatives'));
 const AnalyticsPage = lazy(() => import('~pages/Analytics'));
 const FinancePage = lazy(() => import('~pages/Finance'));
@@ -57,6 +58,15 @@ export const routes: RoutesI[] = [
         component: (
             <LoadingComponent>
                 <CampaignsPage />
+            </LoadingComponent>
+        ),
+    },
+    {
+        id: 8,
+        path: '/campaigns/:id',
+        component: (
+            <LoadingComponent>
+                <CampaignDetailPage />
             </LoadingComponent>
         ),
     },

@@ -9,7 +9,111 @@ export enum Channel {
     PARCEL = 1,
     SCREEN = 2,
     BOTH = 3,
+    /** Avtomatik yetkazish yo'q — faqat qo'lda joylashtiriladigan o'rinlar */
+    NONE = 4,
 }
+
+// ─── Joylashtirishlar (narxlar ro'yxatidagi 12 ta o'rin) ───
+
+export enum Placement {
+    PARCEL_STICKER = 1,
+    PARCEL_BOX = 2,
+    SCREEN_TV = 3,
+    COUNTER_CARD = 4,
+    ROLLUP_BANNER = 5,
+    WEBSITE_BANNER = 6,
+    TELEGRAM_POST = 7,
+    APP_HOME = 8,
+    APP_STORY = 9,
+    APP_PUSH = 10,
+    INSTAGRAM_REEL = 11,
+    INSTAGRAM_STORY = 12,
+}
+
+export enum PriceBasis {
+    CPM = 1,
+    PER_PARCEL_WEIGHT = 2,
+    PER_BRANCH_MONTH = 3,
+    PER_MONTH = 4,
+    PER_POST = 5,
+}
+
+export enum BranchGroup {
+    TASHKENT = 1,
+    OBLAST = 2,
+    REGION = 3,
+}
+
+export enum PackageTier {
+    ECONOM = 1,
+    OPTIMUM = 2,
+    PREMIUM = 3,
+}
+
+/**
+ * Har bir o'rin qanday narxlanadi va qaysi kanal uni yetkazadi (backend `PLACEMENT_DEFS`).
+ * `channel: null` — platforma o'lchamaydigan, qo'lda joylashtiriladigan o'rin.
+ */
+export const PLACEMENT_DEFS: Record<Placement, { priceBasis: PriceBasis; channel: Channel | null }> = {
+    [Placement.PARCEL_STICKER]: { priceBasis: PriceBasis.PER_PARCEL_WEIGHT, channel: Channel.PARCEL },
+    [Placement.PARCEL_BOX]: { priceBasis: PriceBasis.PER_PARCEL_WEIGHT, channel: Channel.PARCEL },
+    [Placement.SCREEN_TV]: { priceBasis: PriceBasis.PER_BRANCH_MONTH, channel: Channel.SCREEN },
+    [Placement.COUNTER_CARD]: { priceBasis: PriceBasis.PER_BRANCH_MONTH, channel: null },
+    [Placement.ROLLUP_BANNER]: { priceBasis: PriceBasis.PER_BRANCH_MONTH, channel: null },
+    [Placement.WEBSITE_BANNER]: { priceBasis: PriceBasis.PER_MONTH, channel: null },
+    [Placement.TELEGRAM_POST]: { priceBasis: PriceBasis.PER_POST, channel: null },
+    [Placement.APP_HOME]: { priceBasis: PriceBasis.PER_POST, channel: null },
+    [Placement.APP_STORY]: { priceBasis: PriceBasis.PER_POST, channel: null },
+    [Placement.APP_PUSH]: { priceBasis: PriceBasis.PER_POST, channel: null },
+    [Placement.INSTAGRAM_REEL]: { priceBasis: PriceBasis.PER_POST, channel: null },
+    [Placement.INSTAGRAM_STORY]: { priceBasis: PriceBasis.PER_POST, channel: null },
+};
+
+/** Paketlar: chegirma foizi va kiradigan o'rinlar (backend `PACKAGE_DEFS`). */
+export const PACKAGE_DEFS: Record<PackageTier, { discountPercent: number; placements: Placement[] }> = {
+    [PackageTier.ECONOM]: {
+        discountPercent: 5,
+        placements: [
+            Placement.COUNTER_CARD,
+            Placement.WEBSITE_BANNER,
+            Placement.TELEGRAM_POST,
+            Placement.INSTAGRAM_REEL,
+            Placement.INSTAGRAM_STORY,
+        ],
+    },
+    [PackageTier.OPTIMUM]: {
+        discountPercent: 10,
+        placements: [
+            Placement.SCREEN_TV,
+            Placement.COUNTER_CARD,
+            Placement.WEBSITE_BANNER,
+            Placement.TELEGRAM_POST,
+            Placement.APP_HOME,
+            Placement.APP_STORY,
+            Placement.APP_PUSH,
+            Placement.INSTAGRAM_REEL,
+            Placement.INSTAGRAM_STORY,
+        ],
+    },
+    [PackageTier.PREMIUM]: {
+        discountPercent: 15,
+        placements: [
+            Placement.SCREEN_TV,
+            Placement.COUNTER_CARD,
+            Placement.ROLLUP_BANNER,
+            Placement.WEBSITE_BANNER,
+            Placement.TELEGRAM_POST,
+            Placement.APP_HOME,
+            Placement.APP_STORY,
+            Placement.APP_PUSH,
+            Placement.INSTAGRAM_REEL,
+            Placement.INSTAGRAM_STORY,
+        ],
+    },
+};
+
+/** Posilka kampaniyasi uchun eng kichik buyurtma (backend `MIN_PARCEL_ORDER`). */
+export const MIN_PARCEL_ORDER = 10_000;
 
 export enum CampaignStatus {
     DRAFT = 1,
@@ -114,7 +218,8 @@ export const PAYMENT_METHOD_ID: Record<string, PaymentMethod> = {
     uzum: PaymentMethod.UZUM,
 };
 
-export const CHANNEL_KEY: Record<string, 'parcel' | 'screen'> = {
+export const CHANNEL_KEY: Record<string, 'parcel' | 'screen' | 'none'> = {
     PARCEL: 'parcel',
     SCREEN: 'screen',
+    NONE: 'none',
 };

@@ -42,8 +42,9 @@ npm run lint && npx tsc --noEmit && npx vitest run && npm run build
 | Yo'l              | Sahifa                | Tarkibi                                                                    |
 | ----------------- | --------------------- | -------------------------------------------------------------------------- |
 | `/`               | Boshqaruv paneli      | 3 KPI + kampaniyalar jadvali                                               |
-| `/campaigns/new`  | Yangi kampaniya       | 3 qadamli sehrgar: Kreativ → Maqsadlash va byudjet → Ko'rib chiqish        |
+| `/campaigns/new`  | Yangi kampaniya       | 4 qadamli sehrgar: Kreativ → Maqsadlash → Joylashtirishlar → Ko'rib chiqish |
 | `/campaigns`      | Mening kampaniyalarim | Qidiruv, holat filtri, sahifalash, pauza/davom ettirish                    |
+| `/campaigns/:id`  | Kampaniya tafsiloti   | Joylashtirishlar va paket (tasdiqdan oldin tahrirlanadi), narx hisobi      |
 | `/creatives`      | Kreativlar            | Kreativ kutubxonasi, moderatsiya holati, rad etish sababi                  |
 | `/analytics`      | Tahlillar             | KPI, ko'rsatishlar dinamikasi, voronka, kanal/hudud/kreativ kesimlari      |
 | `/finance`        | Balans va to'lovlar   | Prepaid balans, kredit limiti, to'ldirish, hisob-fakturalar (QQS), to'lovlar |

@@ -1,7 +1,7 @@
 import { Button, Dropdown, Table, TablePaginationConfig } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { MoreHorizontal, Pause, Play } from 'lucide-react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import {
     BrandMark,
     Card,
@@ -48,7 +48,9 @@ const CampaignsPage = () => {
             render: (_, record) => (
                 <div className={styles.rowFlex}>
                     <BrandMark label={record.brandInitial} color={record.brandColor} />
-                    <span className={styles.cellName}>{record.name}</span>
+                    <Link className={styles.cellName} to={`/campaigns/${record.id}`}>
+                        {record.name}
+                    </Link>
                 </div>
             ),
         },
@@ -91,6 +93,16 @@ const CampaignsPage = () => {
             align: 'right',
             responsive: ['md'],
             render: (_, record) => <span className='tnum'>{formatNumber(record.scans)}</span>,
+        },
+        {
+            title: t('package'),
+            key: 'package',
+            width: 130,
+            responsive: ['lg'],
+            render: (_, record) =>
+                record.packageTier
+                    ? `${t(`package_${record.packageTier.toUpperCase()}`)} · −${record.discountPercent}%`
+                    : '—',
         },
         {
             title: t('status'),

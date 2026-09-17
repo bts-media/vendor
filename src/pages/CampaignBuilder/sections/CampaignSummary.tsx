@@ -2,6 +2,7 @@ import { Button } from 'antd';
 import { ArrowRight, Info } from 'lucide-react';
 import { Card } from '~components/index';
 import useLanguage from '~hooks/useLanguage';
+import { LinesEstimateType } from '~services/campaigns/type';
 import { UploadedCreative } from '~services/creatives/type';
 import { formatCompactSum, formatNumber } from '~utils/helpers';
 import styles from '../CampaignBuilder.module.css';
@@ -15,8 +16,11 @@ export interface SummaryData {
     goal: number;
     days: number;
     estimatedScans: number;
+    /** Qatorlar bo'yicha jami: belgilangan to'lovlar + posilka prognozi (backend) */
     estimatedCost: number;
-    cpm: number;
+    /** Tanlangan paket nomi (i18n kaliti), bo'lmasa null */
+    packageLabel: string | null;
+    lines?: LinesEstimateType;
 }
 
 interface CampaignSummaryProps extends SummaryData {
@@ -36,7 +40,8 @@ const CampaignSummary = ({
     days,
     estimatedScans,
     estimatedCost,
-    cpm,
+    packageLabel,
+    lines,
     isEstimating,
     nextLabel,
     onNext,
@@ -49,6 +54,12 @@ const CampaignSummary = ({
         { key: t('goal'), value: `${formatNumber(goal)} ${t('impressions').toLowerCase()}` },
         { key: t('duration'), value: `${days} ${t('days_short')}` },
         { key: t('sum_est_scans'), value: `~${formatNumber(estimatedScans)}` },
+        {
+            key: t('package'),
+            value: packageLabel
+                ? `${packageLabel} · −${lines?.discountPercent ?? 0}%`
+                : t('package_none'),
+        },
     ];
 
     return (
@@ -90,8 +101,9 @@ const CampaignSummary = ({
                     </span>
                 </div>
                 <div className={styles.sumNote}>
-                    {t('currency')} · {t('est_note')} · {formatNumber(cpm)} {t('currency')}{' '}
-                    {t('cpm')}
+                    {t('currency')} · {t('flat_total').toLowerCase()}{' '}
+                    {formatCompactSum(lines?.flatTotal ?? 0)} · {t('parcel_estimate').toLowerCase()}{' '}
+                    {formatCompactSum(lines?.parcelEstimate ?? 0)} · {t('est_note')}
                 </div>
 
                 <Button

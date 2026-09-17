@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { useApiQuery } from '~api/index';
 import { CHANNEL_KEY } from '~constants/enums';
 import { urls } from '~constants/urls';
-import { ChannelKey } from '~services/campaigns/type';
 import { fromMinor } from '~utils/helpers';
 import {
     ChannelOptionType,
@@ -37,13 +36,14 @@ export const useInventory = () => {
     const channelOptions = useMemo<ChannelOptionType[]>(
         () =>
             (channels.data?.data ?? [])
-                // BOTH — bu alohida kanal emas, ikkovini birga tanlash natijasi
-                .filter(row => row.channel?.name !== 'BOTH')
+                // BOTH / NONE — alohida sotiladigan kanal emas, sehrgar ularni o'zi hosil qiladi
+                .filter(row => row.channel?.name === 'PARCEL' || row.channel?.name === 'SCREEN')
                 .map(row => ({
                     key: CHANNEL_KEY[row.channel?.name] ?? 'parcel',
                     description: row.description,
                     comingSoon: !row.available,
-                    cpm: fromMinor(row.defaultCpmMinor),
+                    unitPrice: fromMinor(row.unitPriceMinor),
+                    priceBasis: row.priceBasis?.name ?? '',
                 })),
         [channels.data],
     );
@@ -65,7 +65,10 @@ export const useInventory = () => {
         () => ({
             availableImpressions: pricing.data?.availableImpressionsPerDay ?? 0,
             minGoal: pricing.data?.minImpressionGoal ?? 0,
-            expectedScanRate: pricing.data?.networkScanRatePercent ?? 0,
+            expectedScanRate: pricing.data?.scanRatePercent ?? 0,
+            parcelPrice: fromMinor(
+                pricing.data?.rules.find(rule => rule.region === null)?.parcelPriceMinor,
+            ),
         }),
         [pricing.data],
     );
@@ -76,19 +79,6 @@ export const useInventory = () => {
         pricing: pricingInfo,
         isLoading: channels.isLoading || regions.isLoading || pricing.isLoading,
     };
-};
-
-/**
- * Tanlangan kanallar bo'yicha o'rtacha CPM — faqat ko'rsatish uchun.
- * Yakuniy narxni backend `POST /advertiser/campaigns/estimate` hisoblaydi.
- */
-export const blendedCpm = (
-    channels: ChannelKey[],
-    catalog: { key: ChannelKey; cpm: number }[],
-): number => {
-    const selected = catalog.filter(c => channels.includes(c.key) && c.cpm > 0);
-    if (!selected.length) return 0;
-    return Math.round(selected.reduce((sum, c) => sum + c.cpm, 0) / selected.length);
 };
 
 /** Taxminiy QR skanerlash = maqsad × skanerlash darajasi */

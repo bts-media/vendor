@@ -1,5 +1,6 @@
 export { default as PageHeader } from './PageHeader';
 export { default as SearchInput } from './Form/SearchInput';
+export { default as PlacementsEditor } from './Form/PlacementsEditor';
 export { default as StatusFilter } from './Form/StatusFilter';
 export { default as EmptyTable } from './Table/EmptyTable';
 export { default as Badge } from './ui/Badge';
@@ -7,6 +8,7 @@ export { default as BrandMark } from './ui/BrandMark';
 export { default as Card, SectionTitle } from './ui/Card';
 export { default as ChannelBadge } from './ui/ChannelBadge';
 export { default as ChipRow } from './ui/ChipRow';
+export { default as EstimateBreakdown } from './ui/EstimateBreakdown';
 export { default as MiniBar } from './ui/MiniBar';
 export { default as PageTitle } from './ui/PageTitle';
 export { default as RegionRow } from './ui/RegionRow';

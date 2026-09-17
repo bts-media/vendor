@@ -23,7 +23,7 @@ interface SelectableCardProps {
     disabled?: boolean;
     /** "Tez kunda" kabi yorliq */
     soonLabel?: string;
-    /** Qo'shimcha qator (masalan CPM) */
+    /** Qo'shimcha qator (masalan birlik narxi) */
     meta?: ReactNode;
     onToggle?: () => void;
 }

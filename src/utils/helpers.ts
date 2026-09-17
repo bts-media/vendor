@@ -187,6 +187,13 @@ export const getApiErrorMessage = (err: unknown, fallback: string): string => {
 	return data.description || data.message || fallback;
 };
 
+/** Backend xato kodi (`message` — SCREAMING_SNAKE_CASE); validatsiya massivida kod yo'q. */
+export const getApiErrorCode = (err: unknown): string | undefined => {
+	const message = (err as { response?: { data?: { message?: unknown } } })?.response?.data
+		?.message;
+	return typeof message === 'string' ? message : undefined;
+};
+
 /** "2 daqiqa oldin" · "3 soat oldin" · undan uzoq bo'lsa sana. */
 export const formatRelativeTime = (value?: string | null): string => {
 	if (!value) return '—';

@@ -1,5 +1,5 @@
 import { Segmented, Skeleton, Slider } from 'antd';
-import { MessageSquare, Monitor, Package } from 'lucide-react';
+import { Hand, MessageSquare, Monitor, Package } from 'lucide-react';
 import { ReactNode, useMemo } from 'react';
 import { Card, ChipRow, RegionRow, SectionTitle, SelectableCard } from '~components/index';
 import useLanguage from '~hooks/useLanguage';
@@ -14,12 +14,22 @@ const CHANNEL_ICON: Record<ChannelKey, ReactNode> = {
     parcel: <Package size={20} />,
     screen: <Monitor size={20} />,
     sms: <MessageSquare size={20} />,
+    none: <Hand size={20} />,
 };
 
 const CHANNEL_TONE: Record<ChannelKey, BadgeTone> = {
     parcel: 'orange',
     screen: 'sky',
     sms: 'teal',
+    none: 'gray',
+};
+
+/** Qo'lda joylashtirish — backend `Channel.NONE`; inventar ro'yxatida yo'q, shu yerda qo'shiladi */
+const NONE_CHANNEL: ChannelOptionType = {
+    key: 'none',
+    description: null,
+    unitPrice: 0,
+    priceBasis: '',
 };
 
 const DURATION_OPTIONS = [14, 30, 60];
@@ -43,12 +53,19 @@ const TargetingStep = ({
 }: TargetingStepProps) => {
     const { t } = useLanguage();
 
-    const toggleChannel = (key: ChannelKey) =>
+    /** `none` boshqalar bilan birga tanlanmaydi — u "avtomatik kanal yo'q" degani */
+    const toggleChannel = (key: ChannelKey) => {
+        if (key === 'none') {
+            onChange({ channels: state.channels.includes('none') ? [] : ['none'] });
+            return;
+        }
+        const others = state.channels.filter(item => item !== 'none');
         onChange({
-            channels: state.channels.includes(key)
-                ? state.channels.filter(item => item !== key)
-                : [...state.channels, key],
+            channels: others.includes(key)
+                ? others.filter(item => item !== key)
+                : [...others, key],
         });
+    };
 
     const toggleRegion = (id: string) =>
         onChange({
@@ -99,7 +116,7 @@ const TargetingStep = ({
             <Card padded>
                 <SectionTitle title={t('section_channels_title')} sub={t('section_channels_sub')} />
                 <div className={styles.channelGrid}>
-                    {channels.map(channel => (
+                    {[...channels, NONE_CHANNEL].map(channel => (
                         <SelectableChannel
                             key={channel.key}
                             channel={channel}
@@ -173,7 +190,7 @@ const TargetingStep = ({
     );
 };
 
-/** Kanal kartasi — CPM meta qatori bilan */
+/** Kanal kartasi — birlik narxi meta qatori bilan (posilka / filial-oy) */
 const SelectableChannel = ({
     channel,
     selected,
@@ -195,9 +212,10 @@ const SelectableChannel = ({
             disabled={channel.comingSoon}
             soonLabel={channel.comingSoon ? t('soon') : undefined}
             meta={
-                channel.cpm > 0 ? (
+                channel.unitPrice > 0 ? (
                     <span className='tnum'>
-                        {formatNumber(channel.cpm)} {t('currency')} · {t('cpm')}
+                        {formatNumber(channel.unitPrice)} {t('currency')} /{' '}
+                        {t(`unit_${channel.priceBasis}`)}
                     </span>
                 ) : undefined
             }
