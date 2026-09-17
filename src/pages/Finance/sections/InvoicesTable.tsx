@@ -6,6 +6,7 @@ import useWindowSize from '~hooks/useWindowSize';
 import { InvoiceType } from '~services/finance/type';
 import { formatDate, formatNumber } from '~utils/helpers';
 import styles from '../Finance.module.css';
+import InvoiceLines from './InvoiceLines';
 
 interface InvoicesTableProps {
     invoices: InvoiceType[];
@@ -74,6 +75,9 @@ const InvoicesTable = ({ invoices, isLoading }: InvoicesTableProps) => {
                 size={isMobile ? 'small' : 'middle'}
                 scroll={{ x: 'max-content' }}
                 locale={{ emptyText: <EmptyTable /> }}
+                expandable={{
+                    expandedRowRender: record => <InvoiceLines invoiceId={record.id} />,
+                }}
             />
         </Card>
     );
