@@ -40,16 +40,24 @@ export type InvoiceResponse = {
     paidAt: string | null;
 };
 
-export type InvoiceDetailResponse = InvoiceResponse & {
-    lines: {
-        campaignId: string;
-        campaignName: string;
-        channel: EnumValue;
-        impressions: number;
-        cpmMinor: string;
-        amountMinor: string;
-    }[];
+/** Bir qator = bitta kampaniya × bitta o'rin */
+export type InvoiceLineResponse = {
+    campaignId: string;
+    campaignName: string;
+    channel: EnumValue;
+    placement: EnumValue | null;
+    /** Posilka qatorida tasdiqlangan posilkalar; belgilangan qatorda 0 */
+    impressions: number;
+    /** Hisoblangan birliklar: posilka, filial-oy, oy yoki post */
+    quantity: number;
+    /** Bir birlik narxi, tiyin (nomi tarixiy — endi ×1000 emas) */
+    cpmMinor: string;
+    amountMinor: string;
+    /** Masalan `SCREEN_TV × 2`; posilka qatorida null */
+    description: string | null;
 };
+
+export type InvoiceDetailResponse = InvoiceResponse & { lines: InvoiceLineResponse[] };
 
 export type PaymentResponse = {
     id: string;
@@ -108,6 +116,18 @@ export type InvoiceType = {
     due: number;
     dueDate: string;
     status: InvoiceStatusKey;
+};
+
+export type InvoiceLineType = {
+    key: string;
+    campaign: string;
+    /** Backend `Placement` nomi (`SCREEN_TV`), null — eski qator */
+    placement: string | null;
+    quantity: number;
+    description: string | null;
+    /** Bir birlik narxi, so'm */
+    unitPrice: number;
+    amount: number;
 };
 
 export type PaymentType = {

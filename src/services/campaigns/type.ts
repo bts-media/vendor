@@ -1,6 +1,7 @@
 import { EnumValue } from '~api/types';
 
-export type ChannelKey = 'parcel' | 'screen' | 'sms';
+/** `none` — avtomatik kanal yo'q, faqat qo'lda joylashtiriladigan o'rinlar */
+export type ChannelKey = 'parcel' | 'screen' | 'sms' | 'none';
 
 export type CampaignStatus =
     | 'draft'
@@ -12,7 +13,40 @@ export type CampaignStatus =
 
 // ─── Backend javob shakllari (`[ADVERTISER] Campaigns`) ───
 
+/** `cpmMinor` — hudud uchun kelishilgan posilka narxi (tiyin), null = narxlar jadvali */
 export type CampaignRegionResponse = { region: string; cpmMinor: string | null };
+
+/** Buyurtma qatori — so'rovda yuboriladigan shakl */
+export type PlacementInput = {
+    placementId: number;
+    /** Posilka qatorida e'tiborga olinmaydi (= ko'rsatishlar maqsadi) */
+    quantity: number;
+    /** Faqat filial-oy asosidagi o'rinlarda (televizor, kartochka, roll-ap) */
+    branchGroupId?: number;
+};
+
+export type CampaignLineResponse = {
+    placement: EnumValue;
+    priceBasis: EnumValue;
+    branchGroup: EnumValue | null;
+    quantity: number;
+    unitPriceMinor: string;
+    surchargeMinor: string;
+    amountMinor: string;
+    /** `RATE_CARD_*` | `CAMPAIGN*` | `FROZEN` (ishga tushirilgandan keyin) | null (narx yo'q) */
+    pricingSource: string | null;
+};
+
+export type LinesEstimateResponse = {
+    lines: CampaignLineResponse[];
+    /** Chegirmadan keyingi barcha belgilangan qatorlar — ishga tushirishda yechiladi */
+    flatTotalMinor: string;
+    /** Posilka qatori eng yengil bosqichda — prognoz */
+    parcelEstimateMinor: string;
+    discountPercent: number;
+    discountMinor: string;
+    totalMinor: string;
+};
 
 export type CampaignResponse = {
     id: string;
@@ -21,6 +55,13 @@ export type CampaignResponse = {
     channel: EnumValue;
     pacing: EnumValue;
     regions: CampaignRegionResponse[];
+    placements: CampaignLineResponse[];
+    packageTier: EnumValue | null;
+    discountPercent: number;
+    /** Belgilangan to'lovlar yechilgan vaqt — null bo'lsa qatorlar hali tahrirlanadi */
+    flatChargedAt: string | null;
+    /** Faqat tafsilot javobida */
+    estimate?: LinesEstimateResponse;
     impressionGoal: number;
     deliveredImpressions: number;
     /** Yetkazilgan ÷ maqsad, butun foizda */
@@ -42,9 +83,14 @@ export type CreateCampaignRequest = {
     startsAt: string;
     endsAt: string;
     pacingId?: number;
+    placements?: PlacementInput[];
+    packageTierId?: number;
 };
 
-export type UpdateCampaignRequest = Partial<Omit<CreateCampaignRequest, 'channelId'>>;
+/** `packageTierId: null` — paketni olib tashlaydi (qatorlar qoladi, chegirma ketadi) */
+export type UpdateCampaignRequest = Partial<
+    Omit<CreateCampaignRequest, 'channelId' | 'packageTierId'>
+> & { packageTierId?: number | null };
 
 export type EstimateRequest = {
     channelId: number;
@@ -52,6 +98,8 @@ export type EstimateRequest = {
     impressionGoal: number;
     startsAt: string;
     endsAt: string;
+    placements?: PlacementInput[];
+    packageTierId?: number;
 };
 
 export type EstimateResponse = {
@@ -64,11 +112,13 @@ export type EstimateResponse = {
         channel: EnumValue;
         region: string;
         impressions: number;
-        cpmMinor: string;
-        /** `campaign` | `region` | `channel` | `default` — narx qayerdan olingani */
+        /** Bitta yetkazish narxi (tiyin): posilka uchun eng yengil bosqich, ekran uchun 0 */
+        unitPriceMinor: string;
+        /** `RATE_CARD_REGION` | `RATE_CARD_DEFAULT` | `FLAT_PLACEMENT` — narx qayerdan olingani */
         pricingSource: string;
         costMinor: string;
     }[];
+    estimate: LinesEstimateResponse;
 };
 
 // ─── Ekran modellari ───
@@ -90,9 +140,40 @@ export type CampaignType = {
     status: CampaignStatus;
     startDate: string;
     endDate: string;
-    /** 1000 ko'rsatish narxi, so'm */
-    cpm: number;
     budget: number | null;
+    channelId: number;
+    packageTier: PackageTierKey | null;
+    discountPercent: number;
+    /** Ishga tushirilgan — belgilangan to'lovlar muzlatilgan, qatorlar tahrirlanmaydi */
+    isFrozen: boolean;
+    placements: CampaignLineType[];
+    /** Faqat tafsilot so'rovida */
+    estimate?: LinesEstimateType;
+};
+
+export type PackageTierKey = 'econom' | 'optimum' | 'premium';
+
+/** Bitta buyurtma qatori — so'mda */
+export type CampaignLineType = {
+    placementId: number;
+    placement: string;
+    priceBasis: string;
+    branchGroupId: number | null;
+    quantity: number;
+    unitPrice: number;
+    surcharge: number;
+    amount: number;
+    /** Narx topilmadi — ishga tushirishdan oldin BTS narxlashi kerak */
+    unpriced: boolean;
+};
+
+export type LinesEstimateType = {
+    lines: CampaignLineType[];
+    flatTotal: number;
+    parcelEstimate: number;
+    discountPercent: number;
+    discount: number;
+    total: number;
 };
 
 export type CampaignStatsType = {
@@ -117,6 +198,8 @@ export type CreateCampaignBody = {
     regions: string[];
     goal: number;
     days: number;
+    placements: PlacementInput[];
+    packageTierId?: number;
     /** Ixtiyoriy: yuklangan kreativ (upload tiketi bilan) */
     creative?: { name: string; typeId: number; uploadTicket: string };
 };

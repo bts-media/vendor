@@ -157,6 +157,7 @@ export const statusTone: Record<string, BadgeTone> = {
     parcel: 'orange',
     screen: 'sky',
     both: 'gray',
+    none: 'gray',
 };
 
 export const toneOf = (status: string): BadgeTone => statusTone[status] ?? 'gray';

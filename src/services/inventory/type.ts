@@ -7,7 +7,10 @@ export type InventoryChannelsResponse = {
     data: {
         channel: EnumValue;
         description: string | null;
-        defaultCpmMinor: string | null;
+        /** PER_PARCEL_WEIGHT (posilka) yoki PER_BRANCH_MONTH (ekran) */
+        priceBasis: EnumValue;
+        /** Bir birlik narxi, tiyin: eng yengil posilka stikeri / bir filial bir oy televizor */
+        unitPriceMinor: string | null;
         available: boolean;
     }[];
 };
@@ -22,11 +25,12 @@ export type InventoryRegionsResponse = {
 };
 
 export type InventoryPricingResponse = {
-    rules: { channel: EnumValue; region: string | null; cpmMinor: string }[];
+    /** Posilka narxlari (faqat PARCEL), avval standart, keyin hududlar */
+    rules: { channel: EnumValue; region: string | null; parcelPriceMinor: string }[];
     availableImpressionsPerDay: number;
     minImpressionGoal: number;
-    /** Tarmoq bo'ylab skanerlash darajasi — hali ma'lumot yetarli bo'lmasa `null` */
-    networkScanRatePercent: number | null;
+    /** Reklama beruvchining o'z skanerlash darajasi — hali posilka yetkazilmagan bo'lsa `null` */
+    scanRatePercent: number | null;
 };
 
 // ─── Ekran modellari ───
@@ -37,8 +41,10 @@ export type ChannelOptionType = {
     description: string | null;
     /** Hali sotuvga chiqmagan kanal — tanlab bo'lmaydi */
     comingSoon?: boolean;
-    /** 1000 ko'rsatish narxi, so'm */
-    cpm: number;
+    /** Bir birlik narxi, so'm (posilka — bitta stiker, ekran — bir filial bir oy) */
+    unitPrice: number;
+    /** `PER_PARCEL_WEIGHT` | `PER_BRANCH_MONTH` — birlik nimaligini aytadi */
+    priceBasis: string;
 };
 
 export type RegionOptionType = {
@@ -57,4 +63,6 @@ export type PricingType = {
     minGoal: number;
     /** Skanerlash darajasi prognozi, % */
     expectedScanRate: number;
+    /** Standart posilka narxi (eng yengil bosqich), so'm */
+    parcelPrice: number;
 };

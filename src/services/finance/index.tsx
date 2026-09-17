@@ -20,6 +20,7 @@ import {
     FinanceOverviewResponse,
     FinanceOverviewType,
     InvoiceDetailResponse,
+    InvoiceLineType,
     InvoiceResponse,
     InvoiceType,
     PaymentResponse,
@@ -145,15 +146,23 @@ export const useInvoiceDetail = (id?: string) => {
         { enabled: Boolean(id) },
     );
 
+    const lines = useMemo<InvoiceLineType[]>(
+        () =>
+            (detail.data?.lines ?? []).map(line => ({
+                key: `${line.campaignId}-${line.channel?.id}-${line.placement?.id ?? 0}`,
+                campaign: line.campaignName,
+                placement: line.placement?.name ?? null,
+                quantity: line.quantity,
+                description: line.description,
+                unitPrice: fromMinor(line.cpmMinor),
+                amount: fromMinor(line.amountMinor),
+            })),
+        [detail.data],
+    );
+
     return {
         invoice: detail.data ? toInvoice(detail.data) : undefined,
-        lines: (detail.data?.lines ?? []).map(line => ({
-            campaign: line.campaignName,
-            channel: line.channel?.name === 'SCREEN' ? 'screen' : 'parcel',
-            impressions: line.impressions,
-            cpm: fromMinor(line.cpmMinor),
-            amount: fromMinor(line.amountMinor),
-        })),
+        lines,
         isLoading: detail.isLoading,
     };
 };

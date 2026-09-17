@@ -15,12 +15,15 @@ import useLanguage from '~hooks/useLanguage';
 import { CallbackType } from '~types/index';
 import {
     fromMinor,
+    getApiErrorCode,
     getApiErrorMessage,
     initialOf,
     parseSearchParams,
 } from '~utils/helpers';
 import { AnalyticsCreativesResponse } from '~services/analytics/type';
 import {
+    CampaignLineResponse,
+    CampaignLineType,
     CampaignResponse,
     CampaignStatsType,
     CampaignType,
@@ -29,6 +32,10 @@ import {
     CreateCampaignRequest,
     EstimateRequest,
     EstimateResponse,
+    LinesEstimateResponse,
+    LinesEstimateType,
+    PackageTierKey,
+    UpdateCampaignRequest,
 } from './type';
 
 const CAMPAIGNS_KEY = 'campaigns';
@@ -50,7 +57,48 @@ const STATUS_IDS: Record<string, number[]> = {
 const channelsOf = (name?: string): ChannelKey[] => {
     if (name === 'BOTH') return ['parcel', 'screen'];
     if (name === 'SCREEN') return ['screen'];
+    if (name === 'NONE') return ['none'];
     return ['parcel'];
+};
+
+const PACKAGE_TIER_KEY: Record<string, PackageTierKey> = {
+    ECONOM: 'econom',
+    OPTIMUM: 'optimum',
+    PREMIUM: 'premium',
+};
+
+const toLine = (line: CampaignLineResponse): CampaignLineType => ({
+    placementId: line.placement.id,
+    placement: line.placement.name,
+    priceBasis: line.priceBasis.name,
+    branchGroupId: line.branchGroup?.id ?? null,
+    quantity: line.quantity,
+    unitPrice: fromMinor(line.unitPriceMinor),
+    surcharge: fromMinor(line.surchargeMinor),
+    amount: fromMinor(line.amountMinor),
+    unpriced: line.pricingSource === null,
+});
+
+const toLinesEstimate = (estimate: LinesEstimateResponse): LinesEstimateType => ({
+    lines: estimate.lines.map(toLine),
+    flatTotal: fromMinor(estimate.flatTotalMinor),
+    parcelEstimate: fromMinor(estimate.parcelEstimateMinor),
+    discountPercent: estimate.discountPercent,
+    discount: fromMinor(estimate.discountMinor),
+    total: fromMinor(estimate.totalMinor),
+});
+
+/**
+ * Backend xato kodi (`message`) uchun tarjima bo'lsa — shu, bo'lmasa umumiy xabar.
+ * Kalit konvensiyasi: `err_<CODE>` (i18n).
+ */
+const useCampaignError = () => {
+    const { t } = useLanguage();
+    return (err: unknown) => {
+        const code = getApiErrorCode(err);
+        const key = code ? `err_${code}` : '';
+        return key && t(key) !== key ? t(key) : getApiErrorMessage(err, t('error'));
+    };
 };
 
 const toCampaign = (
@@ -71,8 +119,13 @@ const toCampaign = (
     status: (CAMPAIGN_STATUS_KEY[row.status?.name] ?? 'draft') as CampaignType['status'],
     startDate: row.startsAt,
     endDate: row.endsAt,
-    cpm: fromMinor(row.cpmMinor),
     budget: row.budgetMinor === null ? null : fromMinor(row.budgetMinor),
+    channelId: row.channel?.id ?? Channel.PARCEL,
+    packageTier: row.packageTier ? (PACKAGE_TIER_KEY[row.packageTier.name] ?? null) : null,
+    discountPercent: row.discountPercent ?? 0,
+    isFrozen: row.flatChargedAt !== null,
+    placements: (row.placements ?? []).map(toLine),
+    estimate: row.estimate ? toLinesEstimate(row.estimate) : undefined,
 });
 
 /** Boshqaruv panelidagi KPI kartalari — `GET /advertiser/dashboard/stats`. */
@@ -123,6 +176,7 @@ export const useCampaigns = (options?: { pageSize?: number }) => {
     const { t } = useLanguage();
     const notify = useNotify();
     const queryClient = useQueryClient();
+    const errorMessage = useCampaignError();
     const { advertiserName } = useAuthContext();
     const params = parseSearchParams(search);
 
@@ -188,8 +242,7 @@ export const useCampaigns = (options?: { pageSize?: number }) => {
                     });
                     callback?.();
                 },
-                onError: err =>
-                    notify.error({ type: 'error', message: getApiErrorMessage(err, t('error')) }),
+                onError: err => notify.error({ type: 'error', message: errorMessage(err) }),
             },
         );
     };
@@ -210,12 +263,13 @@ export const useCampaigns = (options?: { pageSize?: number }) => {
     };
 };
 
-const channelIdOf = (channels: ChannelKey[]): number => {
+export const channelIdOf = (channels: ChannelKey[]): number => {
     const hasParcel = channels.includes('parcel');
     const hasScreen = channels.includes('screen');
     if (hasParcel && hasScreen) return Channel.BOTH;
     if (hasScreen) return Channel.SCREEN;
-    return Channel.PARCEL;
+    if (hasParcel) return Channel.PARCEL;
+    return Channel.NONE;
 };
 
 const toRequest = (body: CreateCampaignBody): CreateCampaignRequest => ({
@@ -228,6 +282,8 @@ const toRequest = (body: CreateCampaignBody): CreateCampaignRequest => ({
         .add(body.days + 1, 'day')
         .endOf('day')
         .toISOString(),
+    placements: body.placements,
+    packageTierId: body.packageTierId,
 });
 
 /**
@@ -243,6 +299,7 @@ export const useCreateCampaign = () => {
     const { t } = useLanguage();
     const notify = useNotify();
     const queryClient = useQueryClient();
+    const errorMessage = useCampaignError();
 
     const { mutateAsync: createMutate, isLoading } = useMutation<
         CampaignResponse,
@@ -268,7 +325,7 @@ export const useCreateCampaign = () => {
             notify.success({ type: 'success', message });
             callback?.();
         } catch (err) {
-            notify.error({ type: 'error', message: getApiErrorMessage(err, t('error')) });
+            notify.error({ type: 'error', message: errorMessage(err) });
         }
     };
 
@@ -276,6 +333,60 @@ export const useCreateCampaign = () => {
         submit(body, t('campaign_created'), callback);
 
     return { createCampaign, isCreating: isLoading };
+};
+
+/** Kampaniya tafsiloti — `GET /advertiser/campaigns/:id`, qatorlar jonli narx bilan. */
+export const useCampaign = (id?: string) => {
+    const { advertiserName } = useAuthContext();
+    const detail = useApiQuery<CampaignResponse>(
+        [CAMPAIGNS_KEY, 'detail', id ?? ''],
+        id ? urls.campaigns.getById(id) : '',
+        undefined,
+        { enabled: Boolean(id) },
+    );
+
+    const campaign = useMemo(
+        () => (detail.data ? toCampaign(detail.data, advertiserName ?? '', new Map()) : undefined),
+        [detail.data, advertiserName],
+    );
+
+    return { campaign, isLoading: detail.isLoading, refetchCampaign: detail.refetch };
+};
+
+/**
+ * Qatorlar va paketni tahrirlash — `PATCH /advertiser/campaigns/:id`.
+ * Faqat tasdiqdan oldin va `flatChargedAt` qo'yilmaguncha; keyin backend
+ * `CAMPAIGN_PLACEMENTS_FROZEN` (409) qaytaradi.
+ */
+export const useUpdateCampaign = () => {
+    const { t } = useLanguage();
+    const notify = useNotify();
+    const queryClient = useQueryClient();
+    const errorMessage = useCampaignError();
+
+    const { mutate, isLoading } = useMutation<
+        CampaignResponse,
+        AxiosError<ApiErrorBody>,
+        { id: string; body: UpdateCampaignRequest }
+    >(
+        async ({ id, body }) =>
+            (await Api.patch(urls.campaigns.update(id), body)) as unknown as CampaignResponse,
+    );
+
+    const updateCampaign = (id: string, body: UpdateCampaignRequest, callback?: CallbackType) =>
+        mutate(
+            { id, body },
+            {
+                onSuccess: () => {
+                    void queryClient.invalidateQueries(CAMPAIGNS_KEY);
+                    notify.success({ type: 'success', message: t('campaign_updated') });
+                    callback?.();
+                },
+                onError: err => notify.error({ type: 'error', message: errorMessage(err) }),
+            },
+        );
+
+    return { updateCampaign, isUpdating: isLoading };
 };
 
 /**
@@ -301,12 +412,22 @@ export const useEstimate = () => {
             impressionGoal: request.impressionGoal,
             startsAt: request.startsAt,
             endsAt: request.endsAt,
+            placements: request.placements,
+            packageTierId: request.packageTierId,
         }).catch(() => undefined);
     };
 
+    const lines = useMemo(
+        () => (data?.estimate ? toLinesEstimate(data.estimate) : undefined),
+        [data],
+    );
+
     return {
         estimate,
+        /** Hududlar bo'yicha posilka prognozi (`estimatedCostMinor`) */
         cost: data ? fromMinor(data.estimatedCostMinor) : 0,
+        /** Qatorlar bo'yicha hisob: belgilangan to'lovlar + posilka prognozi */
+        lines,
         availableImpressions: data?.availableImpressions ?? 0,
         estimatedReach: data?.estimatedReach ?? 0,
         legs: data?.legs ?? [],
