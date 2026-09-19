@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PageHeader, PageTitle } from '~components/index';
 import { useNotify } from '~components/NotificationProvider';
-import { DEFAULT_CAMPAIGN_DAYS } from '~constants/data';
+import { DEFAULT_CAMPAIGN_DAYS, MAX_CAMPAIGN_REGIONS } from '~constants/data';
 import { PackageTier } from '~constants/enums';
 import { useHeaderSlot } from '~context/HeaderSlotProvider';
 import useDebounce from '~hooks/useDebounce';
@@ -22,11 +22,15 @@ import { WizardState } from './types';
 const INITIAL_CHANNELS: WizardState['channels'] = ['parcel', 'screen'];
 const INITIAL_GOAL = 1_000_000;
 
-/** Boshlang'ich qiymatlar mockupdagi holatga mos (posilka + ekran, Toshkent + Samarqand) */
+/**
+ * Boshlang'ich qiymatlar mockupdagi holatga mos (posilka + ekran). Hududlar bu yerda
+ * yozilmaydi: ular backenddagi faol filiallardan kelib chiqadi, shuning uchun qat'iy ro'yxat
+ * hech qanday filial xizmat ko'rsatmaydigan hududni so'rab, `REGION_NOT_AVAILABLE` beradi.
+ */
 const INITIAL_STATE: WizardState = {
     name: '',
     channels: INITIAL_CHANNELS,
-    regions: ['tashkent', 'samarkand'],
+    regions: [],
     goal: INITIAL_GOAL,
     days: DEFAULT_CAMPAIGN_DAYS,
     placements: normalizePlacements(channelIdOf(INITIAL_CHANNELS), [], INITIAL_GOAL),
@@ -92,6 +96,22 @@ const CampaignBuilderPage = () => {
         };
     }, [state, regions, creative, pricing, lines, t]);
 
+    /**
+     * Inventar kelgach hamma hudud belgilanadi — mockupdagi "hududlar oldindan tanlangan"
+     * holatining haqiqiy ma'lumotdagi ko'rinishi. Faqat bir marta: aks holda foydalanuvchi
+     * olib tashlagan hudud qayta belgilanib qolardi.
+     */
+    const regionsSeeded = useRef(false);
+    useEffect(() => {
+        if (regionsSeeded.current || !regions.length) return;
+        regionsSeeded.current = true;
+        setState(prev =>
+            prev.regions.length
+                ? prev
+                : { ...prev, regions: regions.slice(0, MAX_CAMPAIGN_REGIONS).map(item => item.id) },
+        );
+    }, [regions]);
+
     /** Maqsad, kanal, hudud, qator yoki paket o'zgarganda narx qayta so'raladi (debounce). */
     const estimateKey = useDebounce(
         JSON.stringify([
@@ -104,6 +124,8 @@ const CampaignBuilderPage = () => {
         ]),
     );
     useEffect(() => {
+        // Backend kamida bitta hudud talab qiladi (`@ArrayNotEmpty`) — bo'sh tanlovda so'ramaymiz.
+        if (!state.regions.length) return;
         void estimate({
             name: state.name,
             channels: state.channels,

@@ -20,6 +20,9 @@ export const VAT_RATE = 0.12;
 /** Kampaniya standart davomiyligi (kun) — sehrgarda boshlang'ich qiymat */
 export const DEFAULT_CAMPAIGN_DAYS = 30;
 
+/** Backend `MAX_CAMPAIGN_REGIONS` — bitta kampaniya nishonga oladigan hududlar chegarasi */
+export const MAX_CAMPAIGN_REGIONS = 20;
+
 /** Kampaniya holatlari — filtr uchun. Matn i18n'dan: t(`status_${value}`) */
 export const CAMPAIGN_STATUS_OPTIONS: Option[] = [
     { value: 'active', label: 'status_active' },
